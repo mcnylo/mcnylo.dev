@@ -12,7 +12,7 @@ namespace mcnylo.dev
                 {
                     options.ViewLocationFormats.Clear();
 
-                    options.ViewLocationFormats.Add("/{0}/Views/{1}.cshtml");
+                    options.ViewLocationFormats.Add("/{1}/Views/{0}.cshtml");
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
