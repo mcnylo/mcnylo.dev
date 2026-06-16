@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Styles\input.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Contact\Models\" />
     <Folder Include="Home\Models\" />
     <Folder Include="Data\" />
