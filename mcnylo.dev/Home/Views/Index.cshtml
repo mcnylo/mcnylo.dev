@@ -2,4 +2,23 @@
     ViewData["Title"] = "Home";
 }
 
-<h1>This is home!</h1>
+<section class="relative flex min-h-[50vh] w-full items-center overflow-hidden">
+    <video class="absolute inset-0 h-full w-full object-cover"
+           autoplay
+           muted
+           loop
+           playsinline
+           poster="~/images/placeholder_banner_poster.jpg">
+        <source src="~/videos/placeholder_banner_hero.mp4" type="video/mp4" />
+        Your browser does not support the video tag (.mp4)
+    </video>
+</section>
+
+<section class="mx-auto flex max-w-9/10 flex-col justify-center px-4 py-16">
+
+    <h1 class="text-5xl font-bold">Contact</h1>
+    <p class="mt-4 text-base-content/70">
+        Let’s connect.
+    </p>
+
+</section>
