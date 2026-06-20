@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
     <header>
         <nav class="navbar justify-between sm:justify-evenly bg-base-300">
@@ -60,16 +60,14 @@
         </nav>
     </header>
 
-    <div>
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="flex-1">
+        @RenderBody()
+    </main>
 
-    <footer>
-        <div>
-            &copy; 2026 - mcnylo.dev - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <footer class="footer footer-center border-t border-base-300 bg-base-100 p-6 text-base-content/70">
+        <aside>
+            <p>&copy; @DateTime.Now.Year Michael McNiel (McNylo)</p>
+        </aside>
     </footer>
 
 
