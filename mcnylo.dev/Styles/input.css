@@ -1,2 +1,50 @@
 ﻿@import "tailwindcss";
 @plugin "daisyui";
+@plugin "daisyui/theme" {
+    name: "mcnylodev-theme";
+    default: true;
+    prefersdark: true;
+    --color-base-100: #111827;
+    --color-base-200: #070b14;
+    --color-base-300: #07111f;
+    --color-base-content: #f8fafc;
+    --color-primary: #0891b2;
+    --color-primary-content: #ecfeff;
+    --color-secondary: #0369a1;
+    --color-secondary-content: #f0f9ff;
+    --color-accent: #0e7490;
+    --color-accent-content: #ecfeff;
+}
+
+@layer utilities {
+    .text-neon-blue {
+        color: #67e8f9;
+        text-shadow: 0 0 8px #22d3ee, 0 0 18px #0891b2, 0 0 36px #0e7490;
+    }
+
+    .card-neon-blue {
+        border-color: rgba(34, 211, 238, 0.25);
+        box-shadow: 0 0 0 rgba(34, 211, 238, 0), 0 0 0 rgba(8, 145, 178, 0);
+        transition: transform 350ms ease, border-color 350ms ease, box-shadow 300ms ease;
+    }
+
+    .card-neon-blue:hover {
+        transform: translateY(-0.5rem);
+        border-color: rgba(34, 211, 238, 0.65);
+        box-shadow: 0 0 18px rgba(34, 211, 238, 0.22), 0 0 38px rgba(8, 145, 178, 0.35);
+    }
+
+    .card-glass {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.06));
+        backdrop-filter: blur(18px);
+        border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .bg-base-50 {
+        background-color: #182236;
+    }
+
+    .bg-base-400 {
+        background-color: #030814;
+    }
+}
