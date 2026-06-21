@@ -48,11 +48,93 @@
     </div>
 </section>
 
+<!-- Short About Me Section -->
+<section class="bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="about-preview-grid mx-auto max-w-6xl">
+        <div>
+            <p class="text-neon-blue text-sm font-semibold uppercase tracking-[0.35em]">
+                // Summary
+            </p>
+
+            <h2 class="mt-4 text-3xl font-bold text-base-content sm:text-4xl">
+                C#, C/C++, SQL, Python, Java, Assembly...
+
+                <br />
+                <br />
+
+                Whatever. It's all just basic* programming!
+            </h2>
+
+            <br />
+
+            <p class="mt-10 text-lg font-bold text-base-content">
+                * Well... sometimes.
+            </p>
+        </div>
+
+        <div class="about-preview-right">
+            <div class="about-preview-stack">
+
+                <div class="tech-logo-strip">
+                    <div class="tech-logo-track">
+                        <div class="tech-logo-group">
+                            <img src="~/images/csharp_logo.png" alt="C#" class="tech-logo" />
+                            <img src="~/images/dotnet_logo.png" alt=".NET" class="tech-logo" />
+                            <img src="~/images/sqlserver_logo.png" alt="SQL Server" class="tech-logo" />
+                            <img src="~/images/c_logo.png" alt="C" class="tech-logo" />
+                            <img src="~/images/cpp_logo.png" alt="C++" class="tech-logo" />
+                            <img src="~/images/java_logo.png" alt="Java" class="tech-logo" />
+                            <img src="~/images/azure_logo.png" alt="Azure" class="tech-logo" />
+                            <img src="~/images/assembly_logo.png" alt="Assembly" class="tech-logo" />
+                            <img src="~/images/mysql_logo.png" alt="MySQL" class="tech-logo" />
+                            <img src="~/images/python_logo.png" alt="Python" class="tech-logo" />
+                            <img src="~/images/riscv_logo.png" alt="RISC-V" class="tech-logo" />
+                        </div>
+
+                        <div class="tech-logo-group" aria-hidden="true">
+                            <img src="~/images/csharp_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/dotnet_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/sqlserver_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/c_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/cpp_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/java_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/azure_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/assembly_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/mysql_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/python_logo.png" alt="" class="tech-logo" />
+                            <img src="~/images/riscv_logo.png" alt="" class="tech-logo" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-glass border border-white/15">
+                    <div class="card-body">
+                        <p class="text-base leading-8 text-base-content/75">
+                            I'm a current software developer focused on maintaining and creating production ready solutions using C#, .NET, and SQL Server.
+                            Currently interested in exploring real-time systems programming (graphics, physics, simulation, etc.) using C/C++.
+                            I also like to explore the hardware aspect of technology from modding old game consoles to building my own home lab and everything in between!
+                        </p>
+
+                        <div class="card-actions mt-6">
+                            <a asp-controller="About" asp-action="Index" class="btn btn-primary">
+                                Learn More About Me
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<!-- Featured Projects Section -->
 <section class="bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
         <div class="mb-10 text-center">
             <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-blue">
-                Featured Work
+                // Featured Work
             </p>
 
             <h2 class="mt-3 text-3xl font-bold text-white sm:text-4xl">
@@ -60,11 +142,12 @@
             </h2>
 
             <p class="mx-auto mt-4 max-w-2xl text-base text-white/60">
-                A few projects I want to highlight as part of my software development journey.
+                A few hand picked projects that I want to highlight as my favorites.
             </p>
         </div>
 
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
             <article class="card card-glass card-neon-blue min-h-80 border">
                 <div class="card-body">
                     <div class="mb-3 flex items-center justify-between gap-3">
@@ -84,33 +167,8 @@
                         <span class="badge badge-ghost">C#</span>
                         <span class="badge badge-ghost">MVC</span>
                         <span class="badge badge-ghost">Tailwind</span>
-                    </div>
-
-                    <div class="card-actions mt-auto justify-end pt-6">
-                        <a class="btn btn-sm btn-primary">View Project</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card card-glass card-neon-blue min-h-80 border">
-                <div class="card-body">
-                    <div class="mb-3 flex items-center justify-between gap-3">
-                        <span class="badge badge-secondary badge-outline">Database App</span>
-                        <span class="text-sm text-white/40">2025</span>
-                    </div>
-
-                    <h3 class="card-title text-2xl text-white">
-                        Inventory Tracker
-                    </h3>
-
-                    <p class="text-white/65">
-                        A sample inventory management tool focused on clean data entry, reporting, and maintainable code.
-                    </p>
-
-                    <div class="mt-4 flex flex-wrap gap-2">
                         <span class="badge badge-ghost">C#</span>
-                        <span class="badge badge-ghost">SQL</span>
-                        <span class="badge badge-ghost">EF Core</span>
+                        <span class="badge badge-ghost">MVC</span>
                     </div>
 
                     <div class="card-actions mt-auto justify-end pt-6">
@@ -119,32 +177,6 @@
                 </div>
             </article>
 
-            <article class="card card-glass card-neon-blue min-h-80 border">
-                <div class="card-body">
-                    <div class="mb-3 flex items-center justify-between gap-3">
-                        <span class="badge badge-accent badge-outline">Utility</span>
-                        <span class="text-sm text-white/40">2025</span>
-                    </div>
-
-                    <h3 class="card-title text-2xl text-white">
-                        Game Save Utility
-                    </h3>
-
-                    <p class="text-white/65">
-                        A utility concept for managing game-related files, settings, and backups with a simple interface.
-                    </p>
-
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="badge badge-ghost">.NET</span>
-                        <span class="badge badge-ghost">Files</span>
-                        <span class="badge badge-ghost">UI</span>
-                    </div>
-
-                    <div class="card-actions mt-auto justify-end pt-6">
-                        <a class="btn btn-sm btn-primary">View Project</a>
-                    </div>
-                </div>
-            </article>
         </div>
     </div>
 </section>
