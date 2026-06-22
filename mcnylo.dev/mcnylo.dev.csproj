@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="About\Models\" />
     <Folder Include="Contact\Models\" />
     <Folder Include="Home\Models\" />
     <Folder Include="Data\" />
