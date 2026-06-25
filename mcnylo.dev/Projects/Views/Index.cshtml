@@ -1,5 +1,48 @@
-﻿@{
+﻿@model IEnumerable<mcnylo.dev.Data.Models.Project>
+
+@{
     ViewData["Title"] = "Projects";
 }
 
-<h1>This is Projects!</h1>
+<section class="bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl">
+        <h1 class="mb-8 text-4xl font-bold text-white">Projects</h1>
+
+        <div class="space-y-6">
+            @foreach (var project in Model)
+            {
+                <article class="card card-glass border border-white/15">
+                    <div class="card-body">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="badge badge-primary badge-outline">
+                                @project.Category.CategoryName
+                            </span>
+
+                            @if (project.IsFeatured)
+                            {
+                                <span class="badge badge-secondary">Featured</span>
+                            }
+                        </div>
+
+                        <h2 class="card-title text-2xl text-white">
+                            @project.ProjectTitle
+                        </h2>
+
+                        <p class="text-white/65">
+                            @project.ShortDescription
+                        </p>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            @foreach (var projectTag in project.ProjectTags)
+                            {
+                                <span class="badge badge-ghost">
+                                    @projectTag.Tag.TagName
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>

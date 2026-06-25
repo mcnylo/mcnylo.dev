@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using mcnylo.dev.Data;
+using mcnylo.dev.Data.Context;
+
 namespace mcnylo.dev
 {
     public class Program
@@ -15,6 +19,10 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/{1}/Views/{0}.cshtml");
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
             var app = builder.Build();
 
