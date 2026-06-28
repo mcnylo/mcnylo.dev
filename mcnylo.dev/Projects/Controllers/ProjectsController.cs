@@ -6,23 +6,16 @@ namespace mcnylo.dev.Projects.Controllers
 {
     public class ProjectsController : Controller
     {
-        private readonly McNyloDbContext _context;
+        
 
-        public ProjectsController(McNyloDbContext context)
+        public ProjectsController()
         {
-            _context = context;
+            
         }
 
         public async Task<IActionResult> Index()
         {
-            var projects = await _context.Projects
-                .Include(project => project.Category)
-                .Include(project => project.ProjectTags)
-                    .ThenInclude(projectTag => projectTag.Tag)
-                .OrderBy(project => project.ProjectTitle)
-                .ToListAsync();
-
-            return View(projects);
+            return View();
         }
     }
 }

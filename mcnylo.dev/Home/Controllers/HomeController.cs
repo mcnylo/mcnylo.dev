@@ -1,12 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using mcnylo.dev.Home.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace mcnylo.dev.Home.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IHomeService _homeService;
+
+        // ========================================================================================
+
+        public HomeController(IHomeService homeService)
         {
-            return View();
+            _homeService = homeService;
+        }
+
+        // ========================================================================================
+
+        public async Task<IActionResult> Index()
+        {
+            var vm = await _homeService.BuildHomeVM();
+
+            return View(vm);
         }
     }
 }

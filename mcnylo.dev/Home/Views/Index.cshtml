@@ -1,4 +1,6 @@
-﻿@{
+﻿@model mcnylo.dev.Home.ViewModels.HomeVM
+
+@{
     ViewData["Title"] = "Home";
 }
 
@@ -148,34 +150,38 @@
 
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
 
-            <article class="card card-glass card-neon-blue min-h-80 border">
-                <div class="card-body">
-                    <div class="mb-3 flex items-center justify-between gap-3">
-                        <span class="badge badge-primary badge-outline">ASP.NET Core</span>
-                        <span class="text-sm text-white/40">2026</span>
+            @foreach (var project in Model.FeaturedProjects)
+            {
+                <article class="card card-glass card-neon-blue min-h-80 border">
+                    <div class="card-body">
+                        <div class="mb-3 flex items-center justify-between gap-3">
+                            <span class="badge badge-primary badge-outline">@project.ProjectCategory</span>
+                            <span class="text-sm text-white/40">@project.YearCreated</span>
+                        </div>
+
+                        <h3 class="card-title text-2xl text-white">
+                            @project.ProjectName
+                        </h3>
+
+                        <p class="text-white/65">
+                            @project.ProjectShortDescription
+                        </p>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            
+                            @foreach (var tag in project.ProjectTags)
+                            {
+                                <span class="badge badge-ghost">@tag.Tag.TagName</span>
+                            }
+
+                        </div>
+
+                        <div class="card-actions mt-auto justify-end pt-6">
+                            <a class="btn btn-sm btn-primary">View Project</a>
+                        </div>
                     </div>
-
-                    <h3 class="card-title text-2xl text-white">
-                        Portfolio Website
-                    </h3>
-
-                    <p class="text-white/65">
-                        A personal developer portfolio built with ASP.NET Core MVC, Tailwind, daisyUI, and MySQL.
-                    </p>
-
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="badge badge-ghost">C#</span>
-                        <span class="badge badge-ghost">MVC</span>
-                        <span class="badge badge-ghost">Tailwind</span>
-                        <span class="badge badge-ghost">C#</span>
-                        <span class="badge badge-ghost">MVC</span>
-                    </div>
-
-                    <div class="card-actions mt-auto justify-end pt-6">
-                        <a class="btn btn-sm btn-primary">View Project</a>
-                    </div>
-                </div>
-            </article>
+                </article>
+            }
 
         </div>
     </div>
