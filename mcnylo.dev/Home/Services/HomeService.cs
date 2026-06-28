@@ -25,6 +25,7 @@ namespace mcnylo.dev.Home.Services
             List<FeaturedProject> featuredProjects = new List<FeaturedProject>();
 
             var projects = await _dbContext.Projects
+                .AsNoTracking()
                 .Include(project => project.Category)
                 .Include(project => project.ProjectTags)
                     .ThenInclude(projectTag => projectTag.Tag)

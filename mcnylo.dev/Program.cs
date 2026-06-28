@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using mcnylo.dev.Data;
 using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
+using mcnylo.dev.Projects.Services;
 
 namespace mcnylo.dev
 {
@@ -25,6 +25,7 @@ namespace mcnylo.dev
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
 
             var app = builder.Build();
 

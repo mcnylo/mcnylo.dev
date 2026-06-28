@@ -1,0 +1,61 @@
+﻿@model IEnumerable<mcnylo.dev.Projects.ViewModels.ProjectCardVM>
+
+@if (!Model.Any())
+{
+    <div class="card card-glass border border-white/15">
+        <div class="card-body text-center">
+            <h2 class="text-2xl font-bold text-white">
+                No projects found
+            </h2>
+
+            <p class="text-white/60">
+                No projects available under current filters!
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
+        @foreach (var project in Model)
+        {
+            <article class="card card-glass card-neon-blue min-h-80 border">
+                <div class="card-body">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <span class="badge badge-primary badge-outline">
+                            @project.ProjectCategory
+                        </span>
+                    </div>
+
+                    <h2 class="card-title text-2xl text-white">
+                        @project.ProjectTitle
+                    </h2>
+
+                    <p class="text-white/65">
+                        @project.ProjectShortDescription
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        @foreach (var tag in project.Tags)
+                        {
+                            <span class="badge badge-ghost">
+                                @tag
+                            </span>
+                        }
+                    </div>
+
+                    <div class="card-actions mt-auto justify-end pt-6">
+                        <a asp-controller="Projects"
+                           asp-action="Details"
+                           asp-route-slug="@project.ProjectSlug"
+                           class="btn btn-sm btn-primary">
+                            More Details
+                        </a>
+                    </div>
+                </div>
+            </article>
+        }
+
+    </div>
+}
