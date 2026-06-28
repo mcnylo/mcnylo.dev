@@ -27,7 +27,7 @@ namespace mcnylo.dev.Projects.Controllers
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] ProjectFilterVM filter)
         {
-            var projects = await _projectService.GetProjectCards(filter);
+            var projects = await _projectService.GetProjectResults(filter);
 
             return PartialView("_ProjectCards", projects);
         }

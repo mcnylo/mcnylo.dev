@@ -7,6 +7,7 @@
 <section class="bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
         <div class="mb-10 text-center">
+
             <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-blue">
                 // Projects
             </p>
@@ -18,33 +19,29 @@
             <p class="mx-auto mt-4 max-w-2xl text-base text-white/60">
                 Search by project name, category, or the technologies used.
             </p>
+
         </div>
 
-        <form id="project-filter-form"
-              asp-controller="Projects"
-              asp-action="Search"
-              method="get"
-              class="card card-glass mb-10 border border-white/15">
-            <div class="card-body">
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-                    <div>
-                        <label class="label">
-                            <span class="label-text text-white/80">Project name</span>
-                        </label>
+        <form id="project-filter-form" asp-controller="Projects" asp-action="Search" method="get" class="card card-glass relative z-40 mb-10 overflow-visible border border-white/15">
 
-                        <input type="text"
-                               name="Search"
-                               value="@Model.Filter.Search"
-                               placeholder="Search projects..."
-                               class="input input-bordered w-full" />
-                    </div>
+            <input type="hidden" id="project-page-number" name="PageNumber" value="@Model.Filter.PageNumber" />
+            <input type="hidden" name="PageSize" value="@Model.Filter.PageSize" />
 
-                    <div>
+            <div class="card-body overflow-visible">
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold text-white">
+                        Project Filters
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 xl:grid-cols-12 xl:items-end">
+
+                    <div class="xl:col-span-3">
                         <label class="label">
                             <span class="label-text text-white/80">Categories</span>
                         </label>
 
-                        <details class="dropdown w-full">
+                        <details class="project-filter-dropdown dropdown w-full">
                             <summary class="btn btn-outline w-full justify-between text-white">
                                 <span id="selected-category-count">Select categories</span>
                                 <span class="text-xs text-white/50">▼</span>
@@ -52,6 +49,7 @@
 
                             <div class="dropdown-content z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-box border border-white/15 bg-base-300 p-4 shadow-xl">
                                 <div class="space-y-3">
+
                                     @foreach (var category in Model.Categories)
                                     {
                                         <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1 text-sm text-white/75 hover:bg-white/10">
@@ -64,17 +62,18 @@
                                             <span>@category.Name</span>
                                         </label>
                                     }
+
                                 </div>
                             </div>
                         </details>
                     </div>
 
-                    <div>
+                    <div class="xl:col-span-3">
                         <label class="label">
-                            <span class="label-text text-white/80">Project tags</span>
+                            <span class="label-text text-white/80">Project Tags</span>
                         </label>
 
-                        <details class="dropdown w-full">
+                        <details class="project-filter-dropdown dropdown w-full">
                             <summary class="btn btn-outline w-full justify-between text-white">
                                 <span id="selected-tag-count">Select tags</span>
                                 <span class="text-xs text-white/50">▼</span>
@@ -82,6 +81,7 @@
 
                             <div class="dropdown-content z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-box border border-white/15 bg-base-300 p-4 shadow-xl">
                                 <div class="space-y-3">
+
                                     @foreach (var tag in Model.Tags)
                                     {
                                         <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1 text-sm text-white/75 hover:bg-white/10">
@@ -94,22 +94,41 @@
                                             <span>@tag.Name</span>
                                         </label>
                                     }
+
                                 </div>
                             </div>
                         </details>
                     </div>
 
-                    <div class="flex items-end">
+                    <div class="xl:col-span-3">
+                        <label class="label">
+                            <span class="label-text text-white/80">Project Name</span>
+                        </label>
+
+                        <input type="text" name="Search" value="@Model.Filter.Search" placeholder="Search projects..." class="input input-bordered w-full" />
+                    </div>
+
+                    <div class="xl:col-span-2">
                         <button type="submit" class="btn btn-primary w-full">
                             Search Projects
                         </button>
                     </div>
+
+                    <div class="xl:col-span-1">
+                        <button type="button" id="clear-project-filters" class="btn btn-outline w-full">
+                            Clear
+                        </button>
+                    </div>
                 </div>
             </div>
+
         </form>
 
         <div id="project-results">
             @await Html.PartialAsync("_ProjectCards", Model.Projects)
         </div>
+
     </div>
 </section>
+
+<script src="~/js/projects.js" asp-append-version="true"></script>

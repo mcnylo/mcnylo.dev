@@ -23,15 +23,33 @@ namespace mcnylo.dev.Projects.Services
             ProjectIndexVM vm = new ProjectIndexVM();
 
             vm.Filter = filter;
-            vm.Projects = await GetProjectCards(filter);
+            vm.Projects = await GetProjectResults(filter);
             vm.Categories = await GetCategoryOptions();
             vm.Tags = await GetTagOptions();
 
             return vm;
         }
-        public async Task<List<ProjectCardVM>> GetProjectCards(ProjectFilterVM filter)
+        public async Task<ProjectResultsVM> GetProjectResults(ProjectFilterVM filter)
         {
-            List<ProjectCardVM> projectCards = new List<ProjectCardVM>();
+            ProjectResultsVM vm = new ProjectResultsVM();
+
+            if (filter.PageNumber < 1)
+            {
+                filter.PageNumber = 1;
+            }
+            else
+            {
+                filter.PageNumber = filter.PageNumber;
+            }
+
+            if (filter.PageSize < 1)
+            {
+                filter.PageSize = 5;
+            }
+            else
+            {
+                filter.PageSize = filter.PageSize;
+            }
 
             IQueryable<Project> query = _dbContext.Projects
                 .AsNoTracking()
@@ -63,7 +81,21 @@ namespace mcnylo.dev.Projects.Services
                 query = query.Where(project => project.ProjectTags.Any(projectTag => projectTag.Tag.TagSlug == tag));
             }
 
-            var projects = await query.OrderByDescending(x => x.CreatedOn).ToListAsync();
+            int totalProjects = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalProjects / (double)filter.PageSize);
+
+            if (totalPages > 0 && filter.PageNumber > totalPages)
+            {
+                filter.PageNumber = totalPages;
+            }
+
+            var projects = await query
+                .OrderBy(project => project.ProjectTitle)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            List<ProjectCardVM> projectCards = new List<ProjectCardVM>();
 
             foreach (var project in projects)
             {
@@ -73,6 +105,7 @@ namespace mcnylo.dev.Projects.Services
                 p.ProjectSlug = project.ProjectSlug;
                 p.ProjectShortDescription = project.ShortDescription;
                 p.ProjectCategory = project.Category.CategoryName;
+                p.IsFeatured = project.IsFeatured;
 
                 var tags = project.ProjectTags.Select(x => x.Tag.TagName).OrderBy(tagName => tagName).ToList();
 
@@ -81,7 +114,13 @@ namespace mcnylo.dev.Projects.Services
                 projectCards.Add(p);
             }
 
-            return projectCards;
+            vm.Projects = projectCards;
+            vm.PageNumber = filter.PageNumber;
+            vm.PageSize = filter.PageSize;
+            vm.TotalProjects = totalProjects;
+            vm.TotalPages = totalPages;
+
+            return vm;
         }
 
         // ========================================================================================

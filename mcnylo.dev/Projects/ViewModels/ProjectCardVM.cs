@@ -6,6 +6,7 @@
         public string ProjectSlug { get; set; } = "";
         public string ProjectShortDescription { get; set; } = "";
         public string ProjectCategory { get; set; } = "";
+        public bool IsFeatured { get; set; } = false;
         public List<string> Tags { get; set; } = new List<string>();
     }
 }

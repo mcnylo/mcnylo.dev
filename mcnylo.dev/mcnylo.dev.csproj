@@ -14,7 +14,6 @@
   <ItemGroup>
     <Folder Include="About\Models\" />
     <Folder Include="Contact\Models\" />
-    <Folder Include="Projects\Models\" />
   </ItemGroup>
 
   <ItemGroup>

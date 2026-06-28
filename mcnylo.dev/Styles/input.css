@@ -120,4 +120,13 @@
             transform: translateX(-50%);
         }
     }
+
+    .project-filter-dropdown {
+        position: relative;
+        z-index: 40;
+    }
+
+    .project-filter-dropdown[open] {
+        z-index: 80;
+    }
 }
