@@ -1,5 +1,4 @@
 ﻿using mcnylo.dev.Data.Context;
-using mcnylo.dev.Home.Models;
 using mcnylo.dev.Home.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +21,7 @@ namespace mcnylo.dev.Home.Services
         {
             HomeVM vm = new HomeVM();
 
-            List<FeaturedProject> featuredProjects = new List<FeaturedProject>();
+            List<FeaturedProjectVM> featuredProjects = new List<FeaturedProjectVM>();
 
             var projects = await _dbContext.Projects
                 .AsNoTracking()
@@ -35,7 +34,7 @@ namespace mcnylo.dev.Home.Services
 
             foreach (var project in projects)
             {
-                FeaturedProject p = new FeaturedProject();
+                FeaturedProjectVM p = new FeaturedProjectVM();
 
                 p.ProjectName = project.ProjectTitle;
                 p.ProjectShortDescription = project.ShortDescription;

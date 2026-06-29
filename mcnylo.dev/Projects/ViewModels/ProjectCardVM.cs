@@ -8,5 +8,7 @@
         public string ProjectCategory { get; set; } = "";
         public bool IsFeatured { get; set; } = false;
         public List<string> Tags { get; set; } = new List<string>();
+        public string ProjectThumbnailURL { get; set; } = "/images/project-thumb-placeholder.jpg";
+        public string ProjectThumbnailAltText { get; set; } = "No image available for this project.";
     }
 }

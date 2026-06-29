@@ -1,0 +1,166 @@
+﻿@model mcnylo.dev.Projects.ViewModels.ProjectDetailsVM
+
+@{
+    ViewData["Title"] = Model.ProjectTitle;
+}
+
+<section class="bg-base-200 px-4 py-16 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl">
+        <div class="mb-8">
+            <a asp-controller="Projects"
+               asp-action="Index"
+               class="btn btn-ghost btn-sm">
+                ← Back to Projects
+            </a>
+        </div>
+
+        <div class="mb-10">
+            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-blue">
+                // Project Details
+            </p>
+
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+                <span class="badge badge-primary badge-outline">
+                    @Model.ProjectCategory
+                </span>
+
+                @if (Model.IsFeatured)
+                {
+                    <span class="badge badge-secondary">
+                        Featured
+                    </span>
+                }
+            </div>
+
+            <h1 class="mt-4 text-4xl font-bold text-white sm:text-5xl">
+                @Model.ProjectTitle
+            </h1>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            <div class="lg:col-span-8">
+                @if (Model.MediaItems.Any())
+                {
+                    <div id="project-media-carousel"
+                         class="card card-glass card-neon-blue h-full overflow-hidden border">
+                        <div class="card-body">
+                            <h2 class="mb-4 text-2xl font-bold text-white">
+                                Media
+                            </h2>
+
+                            <div id="project-media-display"
+                                 class="overflow-hidden rounded-box border border-white/10 bg-black">
+                            </div>
+
+                            <div class="mt-4 flex gap-3 overflow-x-auto pb-2">
+                                @foreach (var mediaItem in Model.MediaItems)
+                                {
+                                    string thumbnailURL = !string.IsNullOrWhiteSpace(mediaItem.ThumbnailURL)
+                                        ? mediaItem.ThumbnailURL
+                                        : mediaItem.IsImage
+                                            ? mediaItem.MediaURL
+                                            : "/images/project-thumb-placeholder.jpg";
+
+                                    <button type="button"
+                                            class="relative w-36 shrink-0 overflow-hidden rounded-box border border-white/10 bg-base-300 opacity-70 transition hover:opacity-100 aria-selected:border-primary aria-selected:opacity-100"
+                                            data-project-media-button
+                                            data-media-type="@mediaItem.MediaType"
+                                            data-media-url="@mediaItem.MediaURL"
+                                            data-thumbnail-url="@thumbnailURL"
+                                            data-alt-text="@mediaItem.AltText"
+                                            data-is-primary="@mediaItem.IsPrimary.ToString().ToLowerInvariant()"
+                                            aria-selected="false">
+                                        <img src="@thumbnailURL"
+                                             alt="@mediaItem.AltText"
+                                             class="aspect-video w-full object-cover" />
+
+                                        @if (mediaItem.IsVideo)
+                                        {
+                                            <span class="absolute inset-0 flex items-center justify-center bg-black/35 text-3xl text-white">
+                                                <i class="fa-solid fa-play"></i>
+                                            </span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card card-glass h-full border border-white/15">
+                        <div class="card-body">
+                            <h2 class="text-2xl font-bold text-white">
+                                Media
+                            </h2>
+
+                            <div class="mt-4 flex aspect-video items-center justify-center rounded-box border border-white/10 bg-black">
+                                <p class="text-sm text-white/50">
+                                    No media available for this project.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <aside class="space-y-6 lg:col-span-4">
+                <div class="card card-glass border border-white/15">
+                    <div class="card-body">
+                        <h2 class="text-xl font-bold text-white">
+                            Technologies
+                        </h2>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            @foreach (var tag in Model.Tags)
+                            {
+                                <span class="badge badge-ghost">
+                                    @tag
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-glass border border-white/15">
+                    <div class="card-body">
+                        <h2 class="text-xl font-bold text-white">
+                            Links
+                        </h2>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.RepositoryURL))
+                        {
+                            <a href="@Model.RepositoryURL"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-primary mt-4">
+                                <i class="fa-brands fa-github"></i>
+                                View Repository
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="mt-4 text-sm text-white/50">
+                                No public repository available for this project.
+                            </p>
+                        }
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <article class="card card-glass mt-8 border border-white/15">
+            <div class="card-body">
+                <h2 class="text-2xl font-bold text-white">
+                    About this project
+                </h2>
+
+                <p class="mt-4 whitespace-pre-line text-base leading-8 text-white/65">
+                    @Model.ProjectDescription
+                </p>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script src="~/js/project-details.js" asp-append-version="true"></script>

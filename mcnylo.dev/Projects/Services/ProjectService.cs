@@ -55,7 +55,8 @@ namespace mcnylo.dev.Projects.Services
                 .AsNoTracking()
                 .Include(project => project.Category)
                 .Include(project => project.ProjectTags)
-                    .ThenInclude(projectTag => projectTag.Tag);
+                    .ThenInclude(projectTag => projectTag.Tag)
+                .Include(project => project.MediaItems);
 
             // Search filter
             if (!string.IsNullOrEmpty(filter.Search))
@@ -108,8 +109,12 @@ namespace mcnylo.dev.Projects.Services
                 p.IsFeatured = project.IsFeatured;
 
                 var tags = project.ProjectTags.Select(x => x.Tag.TagName).OrderBy(tagName => tagName).ToList();
-
                 p.Tags = tags;
+
+                var primaryMedia = project.MediaItems.Where(x => x.IsPrimary).FirstOrDefault();
+
+                p.ProjectThumbnailURL = primaryMedia != null ? primaryMedia.ThumbnailURL! : "/images/project-thumb-placeholder.jpg";
+                p.ProjectThumbnailAltText = primaryMedia != null ? primaryMedia.AltText! : "No image available for this project.";
 
                 projectCards.Add(p);
             }
@@ -119,6 +124,62 @@ namespace mcnylo.dev.Projects.Services
             vm.PageSize = filter.PageSize;
             vm.TotalProjects = totalProjects;
             vm.TotalPages = totalPages;
+
+            return vm;
+        }
+        public async Task<ProjectDetailsVM?> GetProjectDetailsBySlug(string slug)
+        {
+            if (string.IsNullOrEmpty(slug))
+            {
+                return null;
+            }
+
+            var project = await _dbContext.Projects
+                .AsNoTracking()
+                .Include(project => project.Category)
+                .Include(project => project.ProjectTags)
+                    .ThenInclude(projectTag => projectTag.Tag)
+                .Include(project => project.MediaItems)
+                .Where(project => project.ProjectSlug == slug)
+                .FirstOrDefaultAsync();
+
+            if (project == null)
+            {
+                return null;
+            }
+
+            ProjectDetailsVM vm = new ProjectDetailsVM();
+
+            vm.ProjectTitle = project.ProjectTitle;
+            vm.ProjectSlug = project.ProjectSlug;
+            vm.ProjectDescription = project.LongDescription ?? "";
+            vm.ProjectCategory = project.Category.CategoryName;
+            vm.RepositoryURL = project.RepositoryURL;
+            vm.IsFeatured = project.IsFeatured;
+
+            var tags = project.ProjectTags.Select(x => x.Tag.TagName).OrderBy(tagName => tagName).ToList();
+
+            vm.Tags = tags;
+
+            List<ProjectMediaVM> projectMedia = new List<ProjectMediaVM>();
+
+            var mediaItems = project.MediaItems.OrderBy(x => x.SortOrder).ToList();
+
+            foreach (var media in mediaItems)
+            {
+                ProjectMediaVM m = new ProjectMediaVM();
+
+                m.MediaType = media.MediaType;
+                m.MediaURL = media.MediaURL;
+                m.ThumbnailURL = media.ThumbnailURL;
+                m.AltText = media.AltText ?? "";
+                m.SortOrder = media.SortOrder;
+                m.IsPrimary = media.IsPrimary;
+
+                projectMedia.Add(m);
+            }
+
+            vm.MediaItems = projectMedia;
 
             return vm;
         }

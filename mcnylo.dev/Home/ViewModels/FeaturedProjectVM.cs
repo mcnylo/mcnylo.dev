@@ -1,8 +1,8 @@
 ﻿using mcnylo.dev.Data.Models;
 
-namespace mcnylo.dev.Home.Models
+namespace mcnylo.dev.Home.ViewModels
 {
-    public class FeaturedProject
+    public class FeaturedProjectVM
     {
         public string ProjectName { get; set; } = "";
         public string ProjectShortDescription { get; set; } = "";

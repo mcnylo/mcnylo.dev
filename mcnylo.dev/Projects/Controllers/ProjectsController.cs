@@ -24,12 +24,25 @@ namespace mcnylo.dev.Projects.Controllers
             return View(vm);
         }
 
-        [HttpGet]
+        [HttpGet("projects/search")]
         public async Task<IActionResult> Search([FromQuery] ProjectFilterVM filter)
         {
             var projects = await _projectService.GetProjectResults(filter);
 
             return PartialView("_ProjectCards", projects);
+        }
+
+        [HttpGet("projects/{slug}")]
+        public async Task<IActionResult> Details(string slug)
+        {
+            ProjectDetailsVM? vm = await _projectService.GetProjectDetailsBySlug(slug);
+
+            if (vm == null)
+            {
+                return NotFound();
+            }
+
+            return View(vm);
         }
     }
 }
