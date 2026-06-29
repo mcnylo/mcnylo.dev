@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
 using mcnylo.dev.Projects.Services;
@@ -37,9 +38,20 @@ namespace mcnylo.dev
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
+            string projectMediaRootPath = builder.Configuration["MediaStorage:ProjectMediaRootPath"] ?? throw new InvalidOperationException("Project media root path is not configured.");
+            string projectMediaRequestPath = builder.Configuration["MediaStorage:ProjectMediaRequestPath"] ?? throw new InvalidOperationException("Project media request path is not configured.");
 
+            Directory.CreateDirectory(projectMediaRootPath);
+
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(projectMediaRootPath),
+                RequestPath = projectMediaRequestPath
+            });
+
+            app.UseRouting();
             app.UseAuthorization();
 
             app.MapStaticAssets();

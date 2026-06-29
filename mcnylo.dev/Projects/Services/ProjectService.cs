@@ -76,9 +76,9 @@ namespace mcnylo.dev.Projects.Services
             // Tag filter
             var selectedTagSlugs = filter.TagSlugs.Where(slug => !string.IsNullOrEmpty(slug)).Distinct().ToList();
 
-            foreach (var tag in selectedTagSlugs)
+            if (selectedTagSlugs.Count > 0)
             {
-                query = query.Where(project => project.ProjectTags.Any(projectTag => projectTag.Tag.TagSlug == tag));
+                query = query.Where(project => project.ProjectTags.Any(projectTag => selectedTagSlugs.Contains(projectTag.Tag.TagSlug)));
             }
 
             int totalProjects = await query.CountAsync();

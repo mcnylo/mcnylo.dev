@@ -9,6 +9,7 @@ namespace mcnylo.dev.Data.Context
         public DbSet<ProjectCategory> ProjectCategories => Set<ProjectCategory>();
         public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
+        public DbSet<ProjectMedia> ProjectMedia => Set<ProjectMedia>();
 
         public McNyloDbContext(DbContextOptions<McNyloDbContext> options) : base(options)
         {
@@ -22,6 +23,7 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<ProjectCategory>().ToTable("projectcategory");
             modelBuilder.Entity<Tag>().ToTable("tag");
             modelBuilder.Entity<ProjectTag>().ToTable("projecttag");
+            modelBuilder.Entity<ProjectMedia>().ToTable("projectmedia");
 
             modelBuilder.Entity<ProjectTag>().HasKey(x => new
             {
@@ -43,6 +45,11 @@ namespace mcnylo.dev.Data.Context
                 .HasOne(protag => protag.Tag)
                 .WithMany(tag => tag.ProjectTags)
                 .HasForeignKey(protag => protag.TagId);
+
+            modelBuilder.Entity<ProjectMedia>()
+                .HasOne(media => media.Project)
+                .WithMany(project => project.MediaItems)
+                .HasForeignKey(media => media.ProjectId);
         }
     }
 }

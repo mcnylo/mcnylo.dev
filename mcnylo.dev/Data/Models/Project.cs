@@ -14,5 +14,6 @@
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public DateTime? UpdatedOn {  get; set; } = null;
         public ICollection<ProjectTag> ProjectTags { get; set; } = [];
+        public List<ProjectMedia> MediaItems { get; set; } = new List<ProjectMedia>();
     }
 }

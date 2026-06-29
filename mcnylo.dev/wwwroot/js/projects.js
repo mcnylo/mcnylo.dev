@@ -239,6 +239,8 @@ function setupProjectPagination() {
         setProjectPageNumber(pageButton.dataset.projectPage);
 
         await searchProjects();
+
+        scrollToProjectResultsTop();
     });
 }
 
@@ -250,6 +252,23 @@ function setProjectPageNumber(pageNumber) {
     }
 
     pageNumberInput.value = pageNumber;
+}
+
+function scrollToProjectResultsTop() {
+    const results = document.getElementById("project-results");
+
+    if (!results) {
+        return;
+    }
+
+    const scrollOffset = 96;
+    const resultsTop = results.getBoundingClientRect().top + window.scrollY;
+    const scrollTarget = Math.max(resultsTop - scrollOffset, 0);
+
+    window.scrollTo({
+        top: scrollTarget,
+        behavior: "smooth"
+    });
 }
 
 initializeProjectsPage();
