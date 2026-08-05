@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
 using mcnylo.dev.Projects.Services;
+using mcnylo.dev.About.Services;
 
 namespace mcnylo.dev
 {
@@ -27,6 +28,7 @@ namespace mcnylo.dev
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<IAboutService, AboutService>();
 
             var app = builder.Build();
 

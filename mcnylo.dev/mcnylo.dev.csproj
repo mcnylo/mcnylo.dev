@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="About\Models\" />
+    <Folder Include="About\ViewModels\" />
     <Folder Include="Contact\Models\" />
   </ItemGroup>
 

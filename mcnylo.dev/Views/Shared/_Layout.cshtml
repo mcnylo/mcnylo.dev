@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var useFixedViewport = ViewData["UseFixedViewport"] is true;
+}
+
+<!DOCTYPE html>
 <html lang="en" class="bg-base-200" data-theme="mcnylodev-theme">
 <head>
     <meta charset="utf-8" />
@@ -10,9 +14,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col @(useFixedViewport ? "lg:h-screen lg:overflow-hidden" : "")">
 
-    <header class="relative z-50">
+    <header class="relative z-50 shrink-0">
         <nav class="navbar justify-between sm:justify-evenly bg-base-300">
             <!-- Logo -->
             <a class="text-lg order-2 sm:order-none pr-2 sm:pr-0" asp-controller="Home" asp-action="Index">
@@ -69,11 +73,12 @@
         </nav>
     </header>
 
-    <main role="main" class="flex-1">
+    <main role="main"
+          class="flex-1 @(useFixedViewport ? "lg:min-h-0 lg:overflow-hidden" : "")">
         @RenderBody()
     </main>
 
-    <footer class="footer footer-center border-t border-base-300 bg-base-400 p-6 text-base-content/70">
+    <footer class="footer footer-center shrink-0 border-t border-base-300 bg-base-400 p-6 text-base-content/70">
         <aside>
             <p>&copy; @DateTime.Now.Year Michael McNiel (McNylo)</p>
         </aside>

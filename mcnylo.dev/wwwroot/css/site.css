@@ -8,10 +8,10 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-violet-300: oklch(81.1% 0.111 293.571);
-    --color-zinc-950: oklch(14.1% 0.005 285.823);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
+    --container-md: 28rem;
     --container-2xl: 42rem;
     --container-3xl: 48rem;
     --container-4xl: 56rem;
@@ -1409,9 +1409,6 @@
       font-weight: 600;
     }
   }
-  .block {
-    display: block;
-  }
   .flex {
     display: flex;
   }
@@ -1444,6 +1441,9 @@
   .min-h-\[50vh\] {
     min-height: 50vh;
   }
+  .min-h-\[70vh\] {
+    min-height: 70vh;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -1473,6 +1473,12 @@
   }
   .max-w-7xl {
     max-width: var(--container-7xl);
+  }
+  .max-w-\[1600px\] {
+    max-width: 1600px;
+  }
+  .max-w-md {
+    max-width: var(--container-md);
   }
   .flex-1 {
     flex: 1;
@@ -1504,6 +1510,9 @@
   .cursor-pointer {
     cursor: pointer;
   }
+  .scroll-mt-8 {
+    scroll-margin-top: calc(var(--spacing) * 8);
+  }
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -1525,6 +1534,9 @@
   .justify-end {
     justify-content: flex-end;
   }
+  .justify-start {
+    justify-content: flex-start;
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
@@ -1533,9 +1545,6 @@
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
-  }
-  .gap-6 {
-    gap: calc(var(--spacing) * 6);
   }
   .gap-8 {
     gap: calc(var(--spacing) * 8);
@@ -1589,6 +1598,10 @@
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
   }
   .badge-ghost {
     @layer daisyui.l1.l2 {
@@ -1663,8 +1676,14 @@
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
   }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
   .py-1 {
     padding-block: var(--spacing);
+  }
+  .py-12 {
+    padding-block: calc(var(--spacing) * 12);
   }
   .py-16 {
     padding-block: calc(var(--spacing) * 16);
@@ -2024,6 +2043,11 @@
       padding-inline: calc(var(--spacing) * 6);
     }
   }
+  .sm\:px-10 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 10);
+    }
+  }
   .sm\:pr-0 {
     @media (width >= 40rem) {
       padding-right: 0;
@@ -2072,14 +2096,59 @@
       height: 100%;
     }
   }
+  .lg\:h-screen {
+    @media (width >= 64rem) {
+      height: 100vh;
+    }
+  }
+  .lg\:min-h-0 {
+    @media (width >= 64rem) {
+      min-height: 0;
+    }
+  }
   .lg\:grid-cols-12 {
     @media (width >= 64rem) {
       grid-template-columns: repeat(12, minmax(0, 1fr));
     }
   }
+  .lg\:grid-cols-\[minmax\(18rem\,34\%\)_minmax\(0\,1fr\)\] {
+    @media (width >= 64rem) {
+      grid-template-columns: minmax(18rem,34%) minmax(0,1fr);
+    }
+  }
+  .lg\:overflow-hidden {
+    @media (width >= 64rem) {
+      overflow: hidden;
+    }
+  }
+  .lg\:overflow-y-auto {
+    @media (width >= 64rem) {
+      overflow-y: auto;
+    }
+  }
+  .lg\:overscroll-contain {
+    @media (width >= 64rem) {
+      overscroll-behavior: contain;
+    }
+  }
   .lg\:px-8 {
     @media (width >= 64rem) {
       padding-inline: calc(var(--spacing) * 8);
+    }
+  }
+  .lg\:px-10 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 10);
+    }
+  }
+  .lg\:px-16 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 16);
+    }
+  }
+  .lg\:py-20 {
+    @media (width >= 64rem) {
+      padding-block: calc(var(--spacing) * 20);
     }
   }
   .lg\:text-7xl {
@@ -2213,6 +2282,41 @@
   }
   .project-filter-dropdown[open] {
     z-index: 80;
+  }
+}
+.about-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+  scrollbar-gutter: stable;
+}
+@supports selector(::-webkit-scrollbar) {
+  .about-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    background-color: rgba(8, 18, 32, 0.75);
+  }
+  .about-scrollbar::-webkit-scrollbar-track {
+    background-color: rgba(8, 18, 32, 0.75);
+    border-radius: 0;
+  }
+  .about-scrollbar::-webkit-scrollbar-thumb {
+    min-height: 40px;
+    background-color: rgba(34, 211, 238, 0.75);
+    border: 0;
+    border-radius: 0 !important;
+  }
+  .about-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(34, 211, 238, 1);
+  }
+  .about-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+@supports not selector(::-webkit-scrollbar) {
+  .about-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(34, 211, 238, 0.75) rgba(8, 18, 32, 0.75);
   }
 }
 @layer base {
