@@ -16,33 +16,28 @@
         Your browser does not support the video tag (.mp4)
     </video>
 
-
-
     <div class="relative z-10 mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
         <div class="max-w-3xl">
 
             <!-- Text options maintained on wwwroot/home.js -->
-            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-primary text-violet-300 text-neon-blue">
+            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-primary text-violet-300 text-neon-green">
                 // 
                 <span id="typewriter-text"></span>
                 <span class="animate-pulse">|</span>
             </p>
 
-            <h1 class="text-4xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl">
-                Michael McNiel
-            </h1>
-
-            <p class="mt-6 max-w-2xl text-lg leading-8 text-white/75">
-                Software developer building reliable software, improving complex systems, and exploring how technology works beneath the surface.
-            </p>
+            <div class="mt-8 flex flex-wrap items-end gap-3">
+                <h1 class="text-4xl font-bold text-white sm:text-6xl lg:text-7xl">
+                    Michael McNiel
+                </h1>
+                <span class="text-xl">
+                    (a.k.a McNylo)
+                </span>
+            </div>
 
             <div class="mt-8 flex flex-wrap gap-3">
                 <a asp-controller="Projects" asp-action="Index" class="btn btn-primary">
                     View Projects
-                </a>
-
-                <a asp-controller="About" asp-action="Index" class="btn btn-outline text-white hover:text-base-content">
-                    About Me
                 </a>
             </div>
 
@@ -50,27 +45,25 @@
     </div>
 </section>
 
+<div class="tech-divider" aria-hidden="true"></div>
+
 <!-- Short About Me Section -->
 <section class="bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
     <div class="about-preview-grid mx-auto max-w-6xl">
         <div>
-            <p class="text-neon-blue text-sm font-semibold uppercase tracking-[0.35em]">
+            <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                 // Summary
             </p>
 
             <h2 class="mt-4 text-3xl font-bold text-base-content sm:text-4xl">
-                C#, C/C++, SQL, Python, Java, Assembly...
-
-                <br />
-                <br />
-
-                Whatever. It's all just basic* programming!
+                Full-Stack / Low-Level Systems Developer
             </h2>
 
             <br />
 
-            <p class="mt-10 text-lg font-bold text-base-content">
-                * Well... sometimes.
+            <p class="mt-10 text-lg text-base-content">
+                Currently working as a full-stack software developer. Spending most of my spare time working 
+                on lower level projects. We're not stopping until we're writing in only 1s and 0s.
             </p>
         </div>
 
@@ -112,9 +105,9 @@
                 <div class="card card-glass border border-white/15">
                     <div class="card-body">
                         <p class="text-base leading-8 text-base-content/75">
-                            I'm a current software developer focused on maintaining and creating production ready solutions using C#, .NET, and SQL Server.
-                            Currently interested in exploring real-time systems programming (graphics, physics, simulation, etc.) using C/C++.
-                            I also like to explore the hardware aspect of technology from modding old game consoles to building my own home lab and everything in between!
+                            I'm a current full-stack software developer maintaining and creating internal software and websites using C#, .NET, and SQL Server.
+                            Currently interested in real-time systems programming (graphics, physics, simulation, etc.) using C/C++.
+                            I also like to learn the hardware aspect of technology from modding old game consoles to building my own home lab.
                         </p>
 
                         <div class="card-actions mt-6">
@@ -131,11 +124,13 @@
     </div>
 </section>
 
+<div class="tech-divider" aria-hidden="true"></div>
+
 <!-- Featured Projects Section -->
 <section class="bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
         <div class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-blue">
+            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
                 // Featured Work
             </p>
 
@@ -152,7 +147,7 @@
 
             @foreach (var project in Model.FeaturedProjects)
             {
-                <article class="card card-glass card-neon-blue min-h-80 border">
+                <article class="card card-glass card-neon-green min-h-80 border">
                     <div class="card-body">
                         <div class="mb-3 flex items-center justify-between gap-3">
                             <span class="badge badge-primary badge-outline">@project.ProjectCategory</span>
@@ -171,7 +166,7 @@
                             
                             @foreach (var tag in project.ProjectTags)
                             {
-                                <span class="badge badge-ghost">@tag.Tag.TagName</span>
+                                <span class="badge badge-primary badge-outline">@tag.Tag.TagName</span>
                             }
 
                         </div>
@@ -187,10 +182,12 @@
     </div>
 </section>
 
+<div class="tech-divider" aria-hidden="true"></div>
+
 <!-- Get In Touch Section -->
 <section class="bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-4xl text-center">
-        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-blue">
+        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
             // Contact
         </p>
 
@@ -199,9 +196,25 @@
         </h2>
 
         <div class="mt-8">
-            <a asp-controller="Contact" asp-action="Index" class="btn btn-primary">
-                Get in Touch
-            </a>
+            <p class="text-3xl font-bold">Email:</p>
+
+            <button type="button"
+                    id="copy-email"
+                    data-email-user="michaelcmcniel"
+                    data-email-domain="gmail.com"
+                    class="copy-email text-3xl"
+                    aria-label="Copy email address">
+                michaelcmcniel (at) gmail (dot) com
+            </button>
+        </div>
+
+        <div id="copy-email-toast"
+             class="toast toast-bottom toast-center z-50 hidden">
+            <div class="copy-email-toast">
+                <span class="font-semibold tracking-wide">
+                    // Email copied to clipboard
+                </span>
+            </div>
         </div>
     </div>
 </section>

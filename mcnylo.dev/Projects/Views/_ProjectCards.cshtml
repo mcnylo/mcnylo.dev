@@ -19,7 +19,7 @@ else
     <div class="space-y-8">
         @foreach (var project in Model.Projects)
         {
-            <article class="card card-glass card-neon-blue overflow-hidden border">
+            <article class="card card-glass card-neon-green overflow-hidden border">
                 <div class="grid grid-cols-1 lg:grid-cols-12">
                     <div class="lg:col-span-4">
                         <img src="@project.ProjectThumbnailURL"
@@ -52,7 +52,7 @@ else
                         <div class="mt-4 flex flex-wrap gap-2">
                             @foreach (var tag in project.Tags)
                             {
-                                <span class="badge badge-ghost">
+                                <span class="badge badge-primary badge-outline">
                                     @tag
                                 </span>
                             }

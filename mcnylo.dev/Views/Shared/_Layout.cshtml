@@ -54,7 +54,7 @@
             <ul class="menu hidden gap-2 sm:flex sm:menu-horizontal">
                 <li><a asp-controller="About" asp-action="Index">About Me</a></li>
                 <li><a asp-controller="Projects" asp-action="Index">Projects</a></li>
-                <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
+                <li><a asp-controller="Articles" asp-action="Index">Articles</a></li>
             </ul>
 
             <div class="hidden sm:flex gap-2">
@@ -78,7 +78,9 @@
         @RenderBody()
     </main>
 
-    <footer class="footer footer-center shrink-0 border-t border-base-300 bg-base-400 p-6 text-base-content/70">
+    <div class="tech-divider" aria-hidden="true"></div>
+
+    <footer class="footer footer-center shrink-0 border-t border-base-300 bg-base-300 p-6 text-base-content/70">
         <aside>
             <p>&copy; @DateTime.Now.Year Michael McNiel (McNylo)</p>
         </aside>

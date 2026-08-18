@@ -4,48 +4,89 @@
     name: "mcnylodev-theme";
     default: true;
     prefersdark: true;
-    --color-base-100: #111827;
-    --color-base-200: #070b14;
-    --color-base-300: #07111f;
-    --color-base-content: #f8fafc;
-    --color-primary: #0891b2;
-    --color-primary-content: #ecfeff;
-    --color-secondary: #0369a1;
-    --color-secondary-content: #f0f9ff;
-    --color-accent: #0e7490;
-    --color-accent-content: #ecfeff;
+    --color-base-100: #003806;
+    --color-base-200: #121212;
+    --color-base-300: #0D0D0D;
+    --color-base-content: #F9FCF8;
+    --color-primary: #24B208;
+    --color-primary-content: #ECFFEC;
+    --color-secondary: #13A103;
+    --color-secondary-content: #F0FFF0;
+    --color-accent: #0E9026;
+    --color-accent-content: #ECFFEF;
+}
+
+/* Global page scrollbar */
+html {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+}
+
+@supports selector(::-webkit-scrollbar) {
+    html::-webkit-scrollbar {
+        width: 10px;
+        background-color: rgba(8, 32, 12, 0.75);
+    }
+
+    html::-webkit-scrollbar-track {
+        background-color: rgba(8, 32, 12, 0.75);
+        border-radius: 0;
+    }
+
+    html::-webkit-scrollbar-thumb {
+        min-height: 40px;
+        background-color: rgba(34, 238, 41, 0.75);
+        border: 0;
+        border-radius: 0 !important;
+    }
+
+        html::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(34, 238, 41, 1);
+        }
+
+    html::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+}
+
+/* Firefox fallback */
+@supports not selector(::-webkit-scrollbar) {
+    html {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(34, 238, 41, 0.75) rgba(8, 32, 12, 0.75);
+    }
 }
 
 @layer utilities {
-    .text-neon-blue {
-        color: #67e8f9;
+    .text-neon-green {
+        color: #6EF967;
         text-shadow: 0 0 8px #22d3ee, 0 0 18px #0891b2, 0 0 36px #0e7490;
     }
 
-    .card-neon-blue {
+    .card-neon-green {
         border-color: rgba(34, 211, 238, 0.25);
         box-shadow: 0 0 0 rgba(34, 211, 238, 0), 0 0 0 rgba(8, 145, 178, 0);
-        transition: transform 350ms ease, border-color 350ms ease, box-shadow 300ms ease;
     }
 
-    .card-neon-blue:hover {
-        transform: translateY(-0.5rem);
-        border-color: rgba(34, 211, 238, 0.65);
-        box-shadow: 0 0 18px rgba(34, 211, 238, 0.22), 0 0 38px rgba(8, 145, 178, 0.35);
+    .card-neon-green:hover {
+        border-color: rgba(0, 0, 0, 0.65);
+        box-shadow: 0 0 18px rgba(34, 238, 65, 0.22), 0 0 18px rgba(8, 178, 56, 0.35);
     }
 
     .card-glass {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.06));
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.90), rgba(13, 219, 24, 0.05));
         backdrop-filter: blur(18px);
         border-color: rgba(255, 255, 255, 0.18);
     }
 
     .bg-base-50 {
-        background-color: #182236;
+        background-color: #183625;
     }
 
     .bg-base-400 {
-        background-color: #030814;
+        background-color: #031406;
     }
 
     .logo-fade {
@@ -129,6 +170,77 @@
     .project-filter-dropdown[open] {
         z-index: 80;
     }
+
+    .tech-divider {
+        position: relative;
+        width: 100%;
+        height: 0;
+        flex-shrink: 0;
+    }
+
+    .tech-divider::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 1px;
+        background: linear-gradient( to right, transparent, rgba(34, 197, 94, 0.2) 8%, rgba(34, 197, 94, 0.65) 45%, rgba(34, 197, 94, 0.65) 55%, rgba(34, 197, 94, 0.2) 92%, transparent );
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+    }
+
+    .tech-divider::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        background: #22c55e;
+        border: 1px solid rgba(134, 239, 172, 0.9);
+        box-shadow: 0 0 6px rgba(34, 197, 94, 0.7), 0 0 14px rgba(34, 197, 94, 0.3);
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .copy-email {
+        position: relative;
+        cursor: pointer;
+        color: var(--color-base-content);
+        transition: color 200ms ease, text-shadow 200ms ease;
+    }
+
+    .copy-email:hover,
+    .copy-email:focus-visible {
+        color: #22ee29;
+        text-shadow: 0 0 6px rgba(34, 238, 41, 0.65), 0 0 14px rgba(34, 238, 41, 0.35);
+    }
+
+    .copy-email::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: -0.3rem;
+        left: 0;
+        height: 1px;
+        background-color: #22ee29;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 200ms ease;
+        box-shadow: 0 0 6px rgba(34, 238, 41, 0.7);
+    }
+
+    .copy-email:hover::after,
+    .copy-email:focus-visible::after {
+        transform: scaleX(1);
+    }
+
+    .copy-email-toast {
+        border: 1px solid rgba(34, 238, 41, 0.55);
+        background-color: rgba(3, 8, 20, 0.95);
+        color: #22ee29;
+        padding: 0.85rem 1.25rem;
+        box-shadow: 0 0 10px rgba(34, 238, 41, 0.2), 0 0 24px rgba(34, 238, 41, 0.12);
+    }
 }
 
 .about-scrollbar {
@@ -141,23 +253,23 @@
 @supports selector(::-webkit-scrollbar) {
     .about-scrollbar::-webkit-scrollbar {
         width: 10px;
-        background-color: rgba(8, 18, 32, 0.75);
+        background-color: rgba(8, 32, 12, 0.75);
     }
 
     .about-scrollbar::-webkit-scrollbar-track {
-        background-color: rgba(8, 18, 32, 0.75);
+        background-color: rgba(8, 32, 12, 0.75);
         border-radius: 0;
     }
 
     .about-scrollbar::-webkit-scrollbar-thumb {
         min-height: 40px;
-        background-color: rgba(34, 211, 238, 0.75);
+        background-color: rgba(34, 238, 41, 0.75);
         border: 0;
         border-radius: 0 !important;
     }
 
     .about-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(34, 211, 238, 1);
+        background-color: rgba(34, 238, 41, 1);
     }
 
     .about-scrollbar::-webkit-scrollbar-button {
