@@ -1,5 +1,6 @@
 ﻿@{
     var useFixedViewport = ViewData["UseFixedViewport"] is true;
+    var mainClass = ViewData["MainClass"] as string ?? "";
 }
 
 <!DOCTYPE html>
@@ -10,8 +11,15 @@
     <title>@ViewData["Title"] - McNylo</title>
     <script type="importmap"></script>
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Site styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
 <body class="min-h-screen flex flex-col @(useFixedViewport ? "lg:h-screen lg:overflow-hidden" : "")">
@@ -73,8 +81,7 @@
         </nav>
     </header>
 
-    <main role="main"
-          class="flex-1 @(useFixedViewport ? "lg:min-h-0 lg:overflow-hidden" : "")">
+    <main role="main" class="flex-1 @mainClass @(useFixedViewport ? "lg:min-h-0 lg:overflow-hidden" : "")">
         @RenderBody()
     </main>
 

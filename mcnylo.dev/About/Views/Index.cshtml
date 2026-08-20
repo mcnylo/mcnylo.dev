@@ -3,14 +3,14 @@
     ViewData["UseFixedViewport"] = true;
 }
 
-<section class="bg-base-200 lg:h-full lg:overflow-hidden">
+<section class="tech-surface bg-base-200 lg:h-full lg:overflow-hidden">
     <div class="mx-auto grid max-w-[1600px] lg:h-full lg:grid-cols-[minmax(18rem,34%)_minmax(0,1fr)]">
 
         <!-- Left navigation panel -->
-        <aside class="bg-base-300 px-6 py-12 lg:h-full lg:px-10">
+        <aside class="about-profile-panel px-6 py-12 lg:h-full lg:px-10">
             <div class="flex h-full flex-col justify-center">
 
-                <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                     // About Me
                 </p>
 
@@ -23,23 +23,19 @@
                 </p>
 
                 <nav class="mt-10 flex flex-col gap-3">
-                    <a href="#introduction"
-                       class="btn btn-outline justify-start border-white/15">
+                    <a href="#introduction" class="about-nav-link" data-index="01">
                         Introduction
                     </a>
 
-                    <a href="#experience"
-                       class="btn btn-outline justify-start border-white/15">
+                    <a href="#experience" class="about-nav-link" data-index="02">
                         Experience
                     </a>
 
-                    <a href="#education"
-                       class="btn btn-outline justify-start border-white/15">
+                    <a href="#education" class="about-nav-link" data-index="03">
                         Education
                     </a>
 
-                    <a href="#interests"
-                       class="btn btn-outline justify-start border-white/15">
+                    <a href="#interests" class="about-nav-link" data-index="04">
                         Interests
                     </a>
                 </nav>
@@ -48,12 +44,12 @@
         </aside>
 
         <!-- Right content panel -->
-        <div class="about-scrollbar bg-base-200 px-6 py-12 sm:px-10 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:px-16 lg:py-20">
+        <div class="about-scrollbar about-content-panel px-6 py-12 sm:px-10 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:px-16 lg:py-20">
 
             <section id="introduction"
                      class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
 
-                <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                     // Introduction
                 </p>
 
@@ -72,7 +68,7 @@
 
             <section id="experience" class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
 
-                <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                     // Experience
                 </p>
 
@@ -92,7 +88,7 @@
             <section id="education"
                      class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
 
-                <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                     // Education
                 </p>
 
@@ -112,7 +108,7 @@
             <section id="interests"
                      class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center py-16">
 
-                <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                     // Interests
                 </p>
 

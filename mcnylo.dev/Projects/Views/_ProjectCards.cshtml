@@ -19,52 +19,54 @@ else
     <div class="space-y-8">
         @foreach (var project in Model.Projects)
         {
-            <article class="card card-glass card-neon-green overflow-hidden border">
-                <div class="grid grid-cols-1 lg:grid-cols-12">
-                    <div class="lg:col-span-4">
-                        <img src="@project.ProjectThumbnailURL"
-                             alt="@project.ProjectThumbnailAltText"
-                             class="aspect-video w-full object-cover lg:h-full lg:aspect-auto" />
-                    </div>
-
-                    <div class="card-body lg:col-span-8">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <span class="badge badge-primary badge-outline">
-                                @project.ProjectCategory
-                            </span>
-
-                            @if (project.IsFeatured)
-                            {
-                                <span class="badge badge-secondary">
-                                    Featured
-                                </span>
-                            }
+            <article class="project-frame">
+                <div class="project-frame-panel w-full overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-12">
+                        <div class="lg:col-span-4">
+                            <img src="@project.ProjectThumbnailURL"
+                                 alt="@project.ProjectThumbnailAltText"
+                                 class="aspect-video w-full object-cover lg:h-full lg:aspect-auto" />
                         </div>
 
-                        <h2 class="card-title mt-2 text-3xl text-white">
-                            @project.ProjectTitle
-                        </h2>
-
-                        <p class="max-w-3xl text-base leading-7 text-white/65">
-                            @project.ProjectShortDescription
-                        </p>
-
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            @foreach (var tag in project.Tags)
-                            {
+                        <div class="card-body lg:col-span-8">
+                            <div class="flex flex-wrap items-center gap-3">
                                 <span class="badge badge-primary badge-outline">
-                                    @tag
+                                    @project.ProjectCategory
                                 </span>
-                            }
-                        </div>
 
-                        <div class="card-actions mt-auto justify-end pt-6">
-                            <a asp-controller="Projects"
-                               asp-action="Details"
-                               asp-route-slug="@project.ProjectSlug"
-                               class="btn btn-primary">
-                                More Details
-                            </a>
+                                @if (project.IsFeatured)
+                                {
+                                    <span class="badge badge-secondary">
+                                        Featured
+                                    </span>
+                                }
+                            </div>
+
+                            <h2 class="card-title mt-2 text-3xl text-white">
+                                @project.ProjectTitle
+                            </h2>
+
+                            <p class="max-w-3xl text-base leading-7 text-white/65">
+                                @project.ProjectShortDescription
+                            </p>
+
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                @foreach (var tag in project.Tags)
+                                {
+                                    <span class="badge badge-primary badge-outline">
+                                        @tag
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="card-actions mt-auto justify-end pt-6">
+                                <a asp-controller="Projects"
+                                   asp-action="Details"
+                                   asp-route-slug="@project.ProjectSlug"
+                                   class="btn btn-primary">
+                                    More Details
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

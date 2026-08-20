@@ -5,23 +5,101 @@
 }
 
 <!-- Banner Hero Video -->
-<section class="relative flex min-h-[50vh] w-full items-center overflow-hidden">
-    <video class="absolute inset-0 h-full w-full object-cover"
-           autoplay
-           muted
-           loop
-           playsinline
-           poster="~/images/placeholder_banner_poster.jpg">
-        <source src="~/videos/placeholder_banner_hero.mp4" type="video/mp4" />
-        Your browser does not support the video tag (.mp4)
-    </video>
+<section class="tech-hero relative flex min-h-[50vh] w-full items-center overflow-hidden">
+    <div class="tech-hero-backdrop" aria-hidden="true"></div>
+    <div class="tech-hero-grid" aria-hidden="true"></div>
+    <div class="tech-hero-vector" aria-hidden="true"></div>
+
+    <div class="tech-hero-ticker tech-hero-ticker--upper" aria-hidden="true">
+        <div class="tech-hero-ticker-track">
+
+            <div class="tech-hero-ticker-group">
+                <span>SYS://MCNYLO</span>
+                <span>DEVELOPER PORTFOLIO</span>
+                <span>BUILD ACTIVE</span>
+                <span>C# / C++ / SYSTEMS</span>
+                <span>NODE 04:26</span>
+                <span>CONNECTION STABLE</span>
+                <span>RUNTIME ONLINE</span>
+                <span>HOST::MCNYLO.DEV</span>
+                <span>SECTOR 07</span>
+                <span>LINK STATUS 100%</span>
+                <span>DEV CHANNEL OPEN</span>
+                <span>PACKET 0x7A31</span>
+                <span>CORE SERVICES READY</span>
+                <span>INPUT SIGNAL NOMINAL</span>
+                <span>SESSION ACTIVE</span>
+            </div>
+
+            <div class="tech-hero-ticker-group">
+                <span>SYS://MCNYLO</span>
+                <span>DEVELOPER PORTFOLIO</span>
+                <span>BUILD ACTIVE</span>
+                <span>C# / C++ / SYSTEMS</span>
+                <span>NODE 04:26</span>
+                <span>CONNECTION STABLE</span>
+                <span>RUNTIME ONLINE</span>
+                <span>HOST::MCNYLO.DEV</span>
+                <span>SECTOR 07</span>
+                <span>LINK STATUS 100%</span>
+                <span>DEV CHANNEL OPEN</span>
+                <span>PACKET 0x7A31</span>
+                <span>CORE SERVICES READY</span>
+                <span>INPUT SIGNAL NOMINAL</span>
+                <span>SESSION ACTIVE</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tech-hero-ticker tech-hero-ticker--lower" aria-hidden="true">
+        <div class="tech-hero-ticker-track">
+
+            <div class="tech-hero-ticker-group">
+                <span>SYS://MCNYLO</span>
+                <span>DEVELOPER PORTFOLIO</span>
+                <span>BUILD ACTIVE</span>
+                <span>C# / C++ / SYSTEMS</span>
+                <span>NODE 04:26</span>
+                <span>CONNECTION STABLE</span>
+                <span>RUNTIME ONLINE</span>
+                <span>HOST::MCNYLO.DEV</span>
+                <span>SECTOR 07</span>
+                <span>LINK STATUS 100%</span>
+                <span>DEV CHANNEL OPEN</span>
+                <span>PACKET 0x7A31</span>
+                <span>CORE SERVICES READY</span>
+                <span>INPUT SIGNAL NOMINAL</span>
+                <span>SESSION ACTIVE</span>
+            </div>
+
+            <div class="tech-hero-ticker-group">
+                <span>SYS://MCNYLO</span>
+                <span>DEVELOPER PORTFOLIO</span>
+                <span>BUILD ACTIVE</span>
+                <span>C# / C++ / SYSTEMS</span>
+                <span>NODE 04:26</span>
+                <span>CONNECTION STABLE</span>
+                <span>RUNTIME ONLINE</span>
+                <span>HOST::MCNYLO.DEV</span>
+                <span>SECTOR 07</span>
+                <span>LINK STATUS 100%</span>
+                <span>DEV CHANNEL OPEN</span>
+                <span>PACKET 0x7A31</span>
+                <span>CORE SERVICES READY</span>
+                <span>INPUT SIGNAL NOMINAL</span>
+                <span>SESSION ACTIVE</span>
+            </div>
+
+        </div>
+    </div>
 
     <div class="relative z-10 mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
         <div class="max-w-3xl">
 
             <!-- Text options maintained on wwwroot/home.js -->
-            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-primary text-violet-300 text-neon-green">
-                // 
+            <p class="font-tech mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                //
                 <span id="typewriter-text"></span>
                 <span class="animate-pulse">|</span>
             </p>
@@ -30,13 +108,16 @@
                 <h1 class="text-4xl font-bold text-white sm:text-6xl lg:text-7xl">
                     Michael McNiel
                 </h1>
+
                 <span class="text-xl">
                     (a.k.a McNylo)
                 </span>
             </div>
 
             <div class="mt-8 flex flex-wrap gap-3">
-                <a asp-controller="Projects" asp-action="Index" class="btn btn-primary">
+                <a asp-controller="Projects"
+                   asp-action="Index"
+                   class="btn btn-primary">
                     View Projects
                 </a>
             </div>
@@ -48,10 +129,10 @@
 <div class="tech-divider" aria-hidden="true"></div>
 
 <!-- Short About Me Section -->
-<section class="bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
+<section class="tech-surface bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
     <div class="about-preview-grid mx-auto max-w-6xl">
         <div>
-            <p class="text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+            <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
                 // Summary
             </p>
 
@@ -127,10 +208,10 @@
 <div class="tech-divider" aria-hidden="true"></div>
 
 <!-- Featured Projects Section -->
-<section class="bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+<section class="tech-surface-grid bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
         <div class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+            <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
                 // Featured Work
             </p>
 
@@ -147,32 +228,34 @@
 
             @foreach (var project in Model.FeaturedProjects)
             {
-                <article class="card card-glass card-neon-green min-h-80 border">
-                    <div class="card-body">
-                        <div class="mb-3 flex items-center justify-between gap-3">
-                            <span class="badge badge-primary badge-outline">@project.ProjectCategory</span>
-                            <span class="text-sm text-white/40">@project.YearCreated</span>
-                        </div>
+                <article class="project-frame min-h-80">
+                    <div class="project-frame-panel card">
+                        <div class="card-body">
+                            <div class="mb-3 flex items-center justify-between gap-3">
+                                <span class="badge badge-primary badge-outline">@project.ProjectCategory</span>
+                                <span class="text-sm text-white/40">@project.YearCreated</span>
+                            </div>
 
-                        <h3 class="card-title text-2xl text-white">
-                            @project.ProjectName
-                        </h3>
+                            <h3 class="card-title text-2xl text-white">
+                                @project.ProjectName
+                            </h3>
 
-                        <p class="text-white/65">
-                            @project.ProjectShortDescription
-                        </p>
+                            <p class="text-white/65">
+                                @project.ProjectShortDescription
+                            </p>
 
-                        <div class="mt-4 flex flex-wrap gap-2">
+                            <div class="mt-4 flex flex-wrap gap-2">
                             
-                            @foreach (var tag in project.ProjectTags)
-                            {
-                                <span class="badge badge-primary badge-outline">@tag.Tag.TagName</span>
-                            }
+                                @foreach (var tag in project.ProjectTags)
+                                {
+                                    <span class="badge badge-primary badge-outline">@tag.Tag.TagName</span>
+                                }
 
-                        </div>
+                            </div>
 
-                        <div class="card-actions mt-auto justify-end pt-6">
-                            <a class="btn btn-sm btn-primary">View Project</a>
+                            <div class="card-actions mt-auto justify-end pt-6">
+                                <a class="btn btn-sm btn-primary">View Project</a>
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -185,9 +268,9 @@
 <div class="tech-divider" aria-hidden="true"></div>
 
 <!-- Get In Touch Section -->
-<section class="bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
+<section class="tech-surface bg-base-300 px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-4xl text-center">
-        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+        <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
             // Contact
         </p>
 

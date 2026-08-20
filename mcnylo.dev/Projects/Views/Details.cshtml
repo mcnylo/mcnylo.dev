@@ -2,9 +2,10 @@
 
 @{
     ViewData["Title"] = Model.ProjectTitle;
+    ViewData["MainClass"] = "tech-surface-grid bg-base-200";
 }
 
-<section class="bg-base-200 px-4 py-16 sm:px-6 lg:px-8">
+<section class="px-4 py-16 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-6xl">
         <div class="mb-8">
             <a asp-controller="Projects" asp-action="Index" class="btn btn-ghost btn-sm">
@@ -13,7 +14,7 @@
         </div>
 
         <div class="mb-10">
-            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+            <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
                 // Project Details
             </p>
 
@@ -39,48 +40,49 @@
             <div class="lg:col-span-8">
                 @if (Model.MediaItems.Any())
                 {
-                    <div id="project-media-carousel"
-                         class="card card-glass h-full overflow-hidden border border-white/15">
-                        <div class="card-body">
-                            <h2 class="mb-4 text-2xl font-bold text-white">
-                                Media
-                            </h2>
+                    <div id="project-media-carousel" class="detail-media-panel h-full">
+                        <div class="detail-media-panel-inner h-full">
+                            <div class="card-body">
+                                <h2 class="detail-panel-title mb-4 text-2xl font-bold text-white">
+                                    Media
+                                </h2>
 
-                            <div id="project-media-display"
-                                 class="overflow-hidden rounded-box border border-white/10 bg-black">
-                            </div>
+                                <div id="project-media-display"
+                                     class="overflow-hidden rounded-box border border-white/10 bg-black">
+                                </div>
 
-                            <div class="mt-4 flex gap-3 overflow-x-auto pb-2">
-                                @foreach (var mediaItem in Model.MediaItems)
-                                {
-                                    string thumbnailURL = !string.IsNullOrWhiteSpace(mediaItem.ThumbnailURL)
-                                        ? mediaItem.ThumbnailURL
-                                        : mediaItem.IsImage
-                                            ? mediaItem.MediaURL
-                                            : "/images/project-thumb-placeholder.jpg";
+                                <div class="media-scrollbar mt-4 flex gap-3 overflow-x-auto pb-2">
+                                    @foreach (var mediaItem in Model.MediaItems)
+                                    {
+                                        string thumbnailURL = !string.IsNullOrWhiteSpace(mediaItem.ThumbnailURL)
+                                            ? mediaItem.ThumbnailURL
+                                            : mediaItem.IsImage
+                                                ? mediaItem.MediaURL
+                                                : "/images/project-thumb-placeholder.jpg";
 
-                                    <button type="button"
-                                            class="relative w-36 shrink-0 overflow-hidden rounded-box border border-white/10 bg-base-300 opacity-70 transition hover:opacity-100 aria-selected:border-primary aria-selected:opacity-100"
-                                            data-project-media-button
-                                            data-media-type="@mediaItem.MediaType"
-                                            data-media-url="@mediaItem.MediaURL"
-                                            data-thumbnail-url="@thumbnailURL"
-                                            data-alt-text="@mediaItem.AltText"
-                                            data-is-primary="@mediaItem.IsPrimary.ToString().ToLowerInvariant()"
-                                            aria-selected="false">
+                                        <button type="button"
+                                                class="relative w-36 shrink-0 overflow-hidden rounded-box border border-white/10 bg-base-300 opacity-70 transition hover:opacity-100 aria-selected:border-primary aria-selected:opacity-100"
+                                                data-project-media-button
+                                                data-media-type="@mediaItem.MediaType"
+                                                data-media-url="@mediaItem.MediaURL"
+                                                data-thumbnail-url="@thumbnailURL"
+                                                data-alt-text="@mediaItem.AltText"
+                                                data-is-primary="@mediaItem.IsPrimary.ToString().ToLowerInvariant()"
+                                                aria-selected="false">
 
-                                        <img src="@thumbnailURL"
-                                             alt="@mediaItem.AltText"
-                                             class="aspect-video w-full object-cover" />
+                                            <img src="@thumbnailURL"
+                                                 alt="@mediaItem.AltText"
+                                                 class="aspect-video w-full object-cover" />
 
-                                        @if (mediaItem.IsVideo)
-                                        {
-                                            <span class="absolute inset-0 flex items-center justify-center bg-black/35 text-3xl text-white">
-                                                <i class="fa-solid fa-play"></i>
-                                            </span>
-                                        }
-                                    </button>
-                                }
+                                            @if (mediaItem.IsVideo)
+                                            {
+                                                <span class="absolute inset-0 flex items-center justify-center bg-black/35 text-3xl text-white">
+                                                    <i class="fa-solid fa-play"></i>
+                                                </span>
+                                            }
+                                        </button>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,46 +107,51 @@
 
             <aside class="space-y-6 lg:col-span-4">
 
-                <div class="card card-glass border border-white/15">
-                    <div class="card-body">
+                <div class="detail-module">
+                    <div class="detail-module-inner">
+                        <div class="card-body">
 
-                        <h2 class="text-xl font-bold text-white">
-                            Links
-                        </h2>
+                            <h2 class="text-xl font-bold text-white">
+                                Links
+                            </h2>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.RepositoryURL))
-                        {
-                            <a href="@Model.RepositoryURL"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="btn btn-primary mt-4">
-                                <i class="fa-brands fa-github"></i>
-                                View Repository
-                            </a>
-                        }
-                        else
-                        {
-                            <p class="mt-4 text-sm text-white/50">
-                                No public repository available for this project.
-                            </p>
-                        }
+                            @if (!string.IsNullOrWhiteSpace(Model.RepositoryURL))
+                            {
+                                <a href="@Model.RepositoryURL"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-primary mt-4">
+                                    <i class="fa-brands fa-github"></i>
+                                    View Repository
+                                </a>
+                            }
+                            else
+                            {
+                                <p class="mt-4 text-sm text-white/50">
+                                    No public repository available for this project.
+                                </p>
+                            }
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="card card-glass border border-white/15">
-                    <div class="card-body">
-                        <h2 class="text-xl font-bold text-white">
-                            Technologies
-                        </h2>
+                <div class="detail-module">
+                    <div class="detail-module-inner">
+                        <div class="card-body">
 
-                        <div class="mt-4 flex flex-wrap gap-2">
+                            <h2 class="detail-module-title text-xl font-bold text-white">
+                                Technologies
+                            </h2>
 
-                            @foreach (var tag in Model.Tags)
-                            {
-                                <span class="badge badge-ghost">
-                                    @tag
-                                </span>
-                            }
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <span class="badge badge-primary badge-outline">
+                                        @tag
+                                    </span>
+                                }
+                            </div>
 
                         </div>
                     </div>
@@ -153,17 +160,22 @@
             </aside>
         </div>
 
-        <article class="card card-glass mt-8 border border-white/15">
-            <div class="card-body">
-                <h2 class="text-2xl font-bold text-white">
-                    About this project
-                </h2>
+        <article class="detail-readout mt-8">
+            <div class="detail-readout-inner">
+                <div class="card-body gap-0">
 
-                <p class="mt-4 whitespace-pre-line text-base leading-8 text-white/65">
-                    @Model.ProjectDescription
-                </p>
+                    <h2 class="detail-readout-title text-2xl font-bold text-white">
+                        About this project
+                    </h2>
+
+                    <p class="mt-3 whitespace-pre-line text-base leading-8 text-white/65">
+                        @Model.ProjectDescription.Trim()
+                    </p>
+
+                </div>
             </div>
         </article>
+
     </div>
 </section>
 
