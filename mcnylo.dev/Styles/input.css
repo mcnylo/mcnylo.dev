@@ -982,6 +982,59 @@ body {
     }
 }
 
+.about-profile-stack {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-portrait-stage {
+    position: relative;
+    width: 100%;
+    height: clamp(24rem, 48vh, 32rem);
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.about-portrait {
+    position: absolute;
+    bottom: 0;
+    left: 40%;
+    width: min(43rem, 140%);
+    max-width: none;
+    transform: translateX(-50%);
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    filter: drop-shadow(0 0 12px rgba(34, 238, 41, 0.10)) drop-shadow(0 18px 32px rgba(0, 0, 0, 0.40));
+    -webkit-mask-image: linear-gradient( to bottom, black 0%, black 72%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.45) 90%, transparent 100% );
+    mask-image: linear-gradient( to bottom, black 0%, black 72%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.45) 90%, transparent 100% );
+}
+
+.about-portrait.is-active {
+    opacity: 1;
+}
+
+.about-profile-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: -4.5rem;
+}
+
+.about-profile-copy {
+    position: relative;
+    z-index: 3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.65);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-portrait {
+        transition: none;
+    }
+}
+
 /* =========================================================
    Media Scrollbar
    ========================================================= */

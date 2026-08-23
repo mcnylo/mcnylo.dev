@@ -13,6 +13,14 @@
 
   <ItemGroup>
     <Folder Include="About\ViewModels\" />
+    <Folder Include="Admin\Controllers\" />
+    <Folder Include="Admin\Services\" />
+    <Folder Include="Admin\ViewModels\" />
+    <Folder Include="Admin\Views\" />
+    <Folder Include="Articles\Controllers\" />
+    <Folder Include="Articles\Views\" />
+    <Folder Include="Articles\ViewModels\" />
+    <Folder Include="Articles\Services\" />
   </ItemGroup>
 
   <ItemGroup>
