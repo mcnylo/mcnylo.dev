@@ -113,7 +113,7 @@ namespace mcnylo.dev.Projects.Services
 
                 var primaryMedia = project.MediaItems.Where(x => x.IsPrimary).FirstOrDefault();
 
-                p.ProjectThumbnailURL = primaryMedia != null ? primaryMedia.ThumbnailURL! : "/images/project-thumb-placeholder.jpg";
+                p.ProjectThumbnailURL = primaryMedia != null ? primaryMedia.ThumbnailURL! : "/images/thumb-placeholder.jpg";
                 p.ProjectThumbnailAltText = primaryMedia != null ? primaryMedia.AltText! : "No image available for this project.";
 
                 projectCards.Add(p);

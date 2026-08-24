@@ -2,16 +2,10 @@
 
 @if (!Model.Projects.Any())
 {
-    <div class="card card-glass border border-white/15">
-        <div class="card-body text-center">
-            <h2 class="text-2xl font-bold text-white">
-                No projects found
-            </h2>
-
-            <p class="text-white/60">
-                Nothing matched those filters. Try loosening up the search a bit.
-            </p>
-        </div>
+    <div class="border-t border-[#22ee29]/15 py-12">
+        <p class="font-mono text-sm uppercase tracking-[0.2em] text-zinc-500">
+            No projects found.
+        </p>
     </div>
 }
 else

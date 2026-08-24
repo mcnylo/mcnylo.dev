@@ -2,14 +2,15 @@
 
 @{
     ViewData["Title"] = Model.ProjectTitle;
-    ViewData["MainClass"] = "tech-surface-grid bg-base-200";
+    ViewData["MainClass"] = "archive-surface bg-base-200";
 }
 
 <section class="px-4 py-16 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-6xl">
         <div class="mb-8">
-            <a asp-controller="Projects" asp-action="Index" class="btn btn-ghost btn-sm">
-                ← Back to Projects
+            <a href="/projects"
+               class="text-sm font-mono uppercase tracking-[0.2em] text-emerald-400/70 hover:text-[#6ef967]">
+                ← Projects
             </a>
         </div>
 
@@ -58,7 +59,7 @@
                                             ? mediaItem.ThumbnailURL
                                             : mediaItem.IsImage
                                                 ? mediaItem.MediaURL
-                                                : "/images/project-thumb-placeholder.jpg";
+                                                : "/images/thumb-placeholder.jpg";
 
                                         <button type="button"
                                                 class="relative w-36 shrink-0 overflow-hidden rounded-box border border-white/10 bg-base-300 opacity-70 transition hover:opacity-100 aria-selected:border-primary aria-selected:opacity-100"

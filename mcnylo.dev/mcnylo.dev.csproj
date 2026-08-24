@@ -8,22 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="About\ViewModels\**" />
+    <Compile Remove="Admin\**" />
+    <Content Remove="About\ViewModels\**" />
+    <Content Remove="Admin\**" />
+    <EmbeddedResource Remove="About\ViewModels\**" />
+    <EmbeddedResource Remove="Admin\**" />
+    <None Remove="About\ViewModels\**" />
+    <None Remove="Admin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Styles\input.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="About\ViewModels\" />
-    <Folder Include="Admin\Controllers\" />
-    <Folder Include="Admin\Services\" />
-    <Folder Include="Admin\ViewModels\" />
-    <Folder Include="Admin\Views\" />
-    <Folder Include="Articles\Controllers\" />
-    <Folder Include="Articles\Views\" />
-    <Folder Include="Articles\ViewModels\" />
-    <Folder Include="Articles\Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Markdig" Version="1.3.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

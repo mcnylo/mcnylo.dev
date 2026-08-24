@@ -11,6 +11,8 @@ namespace mcnylo.dev.Data.Context
         public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
         public DbSet<ProjectMedia> ProjectMedia => Set<ProjectMedia>();
         public DbSet<Article> Articles => Set<Article>();
+        public DbSet<ArticleCategory> ArticleCategories => Set<ArticleCategory>();
+        public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
 
         public McNyloDbContext(DbContextOptions<McNyloDbContext> options) : base(options)
         {
@@ -26,6 +28,8 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<ProjectTag>().ToTable("projecttag");
             modelBuilder.Entity<ProjectMedia>().ToTable("projectmedia");
             modelBuilder.Entity<Article>().ToTable("article");
+            modelBuilder.Entity<ArticleCategory>().ToTable("articlecategory");
+            modelBuilder.Entity<ArticleTag>().ToTable("articletag");
 
             modelBuilder.Entity<ProjectTag>().HasKey(x => new
             {
@@ -72,6 +76,45 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<Article>()
                 .Property(article => article.MarkdownContent)
                 .HasColumnType("longtext");
+
+            modelBuilder.Entity<ArticleCategory>()
+                .HasIndex(articleCategory => articleCategory.CategorySlug)
+                .IsUnique();
+
+            modelBuilder.Entity<ArticleCategory>()
+                .Property(articleCategory => articleCategory.CategoryName)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<ArticleCategory>()
+                .Property(articleCategory => articleCategory.CategorySlug)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<Article>()
+                .Property(article => article.PrimaryImagePath)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<Article>()
+                .Property(article => article.PrimaryImageAltText)
+                .HasMaxLength(250);
+
+            modelBuilder.Entity<Article>()
+                .HasOne(article => article.ArticleCategory)
+                .WithMany(articleCategory => articleCategory.Articles)
+                .HasForeignKey(article => article.ArticleCategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ArticleTag>()
+                .HasKey(articleTag => new { articleTag.ArticleId, articleTag.TagId });
+
+            modelBuilder.Entity<ArticleTag>()
+                .HasOne(articleTag => articleTag.Article)
+                .WithMany(article => article.ArticleTags)
+                .HasForeignKey(articleTag => articleTag.ArticleId);
+
+            modelBuilder.Entity<ArticleTag>()
+                .HasOne(articleTag => articleTag.Tag)
+                .WithMany()
+                .HasForeignKey(articleTag => articleTag.TagId);
         }
     }
 }

@@ -1,0 +1,65 @@
+﻿@model mcnylo.dev.Articles.ViewModels.ArticleDetailsVM
+
+@{
+    ViewData["Title"] = Model.ArticleTitle;
+}
+
+<div class="archive-surface">
+    <section class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <a href="/articles"
+           class="text-sm font-mono uppercase tracking-[0.2em] text-emerald-400/70 hover:text-[#6ef967]">
+            ← Articles
+        </a>
+
+        <header class="mt-8 border-l border-[#22ee29]/30 pl-5">
+            <div class="flex flex-wrap items-center gap-3">
+                <p class="text-xs font-mono uppercase tracking-[0.25em] text-emerald-400/60">
+                    @(string.IsNullOrWhiteSpace(Model.CategoryName) ? "Article" : Model.CategoryName)
+                </p>
+
+                @if (Model.Tags.Count > 0)
+                {
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <span class="border border-[#22ee29]/20 bg-emerald-400/[0.03] px-2 py-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-[#6ef967]/70">
+                                @tag.TagName
+                            </span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight text-zinc-100 sm:text-5xl">
+                @Model.ArticleTitle
+            </h1>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <p class="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
+                    @Model.ShortDescription
+                </p>
+            }
+
+            @if (Model.PublishedOn.HasValue)
+            {
+                <p class="mt-4 text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">
+                    Published @Model.PublishedOn.Value.ToString("MMM dd, yyyy")
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.PrimaryImagePath))
+            {
+                <figure class="mt-10 overflow-hidden border border-[#22ee29]/15 bg-black/30">
+                    <img src="@Model.PrimaryImagePath"
+                         alt="@(string.IsNullOrWhiteSpace(Model.PrimaryImageAltText) ? Model.ArticleTitle : Model.PrimaryImageAltText)"
+                         class="aspect-[16/7] w-full object-cover opacity-90" />
+                </figure>
+            }
+        </header>
+
+        <article class="article-markdown mt-12 border-t border-[#22ee29]/15 pt-10 text-zinc-300">
+            @Html.Raw(Model.HtmlContent)
+        </article>
+    </section>
+</div>

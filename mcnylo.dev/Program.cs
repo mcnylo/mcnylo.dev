@@ -4,6 +4,7 @@ using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
 using mcnylo.dev.Projects.Services;
 using mcnylo.dev.About.Services;
+using mcnylo.dev.Articles.Services;
 
 namespace mcnylo.dev
 {
@@ -23,12 +24,14 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = builder.Configuration.GetConnectionString("WorkConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
             builder.Services.AddScoped<IAboutService, AboutService>();
+            builder.Services.AddScoped<IArticleMarkdownService, ArticleMarkdownService>();
+            builder.Services.AddScoped<IArticleService, ArticleService>();
 
             var app = builder.Build();
 

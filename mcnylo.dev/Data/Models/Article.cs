@@ -11,5 +11,10 @@
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedOn { get; set; } = null;
         public DateTime? PublishedOn { get; set; } = null;
+        public int? ArticleCategoryId { get; set; } = null;
+        public ArticleCategory? ArticleCategory { get; set; } = null;
+        public string PrimaryImagePath { get; set; } = "";
+        public string PrimaryImageAltText { get; set; } = "";
+        public ICollection<ArticleTag> ArticleTags { get; set; } = [];
     }
 }

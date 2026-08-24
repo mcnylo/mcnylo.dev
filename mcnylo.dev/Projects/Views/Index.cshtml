@@ -4,131 +4,112 @@
     ViewData["Title"] = "Projects";
 }
 
-<section class="tech-surface-grid bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-        <div class="mb-10 text-center">
+<div class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <section>
+        <div class="mx-auto max-w-7xl">
+            <div class="mb-10 text-center">
 
-            <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
-                // Projects
-            </p>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Projects
+                </p>
 
-            <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
-                Project Archive
-            </h1>
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Project Archive
+                </h1>
 
-            <p class="mx-auto mt-4 max-w-2xl text-base text-white/60">
-                Search by project name, category, or the technologies used.
-            </p>
+                <p class="mx-auto mt-4 max-w-2xl text-base text-white/60">
+                    Search by project name, category, or the technologies used.
+                </p>
 
-        </div>
-
-        <form id="project-filter-form" asp-controller="Projects" asp-action="Search" method="get" class="card card-glass relative z-40 mb-10 overflow-visible border border-white/15">
-
-            <input type="hidden" id="project-page-number" name="PageNumber" value="@Model.Filter.PageNumber" />
-            <input type="hidden" name="PageSize" value="@Model.Filter.PageSize" />
-
-            <div class="card-body overflow-visible">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold text-white">
-                        Project Filters
-                    </h2>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4 xl:grid-cols-12 xl:items-end">
-
-                    <div class="xl:col-span-3">
-                        <label class="label">
-                            <span class="label-text text-white/80">Categories</span>
-                        </label>
-
-                        <details class="project-filter-dropdown dropdown w-full">
-                            <summary class="btn btn-outline w-full justify-between text-white">
-                                <span id="selected-category-count">Select categories</span>
-                                <span class="text-xs text-white/50">▼</span>
-                            </summary>
-
-                            <div class="dropdown-content z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-box border border-white/15 bg-base-300 p-4 shadow-xl">
-                                <div class="space-y-3">
-
-                                    @foreach (var category in Model.Categories)
-                                    {
-                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1 text-sm text-white/75 hover:bg-white/10">
-                                            <input type="checkbox"
-                                                   name="CategorySlugs"
-                                                   value="@category.Slug"
-                                                   checked="@Model.Filter.CategorySlugs.Contains(category.Slug)"
-                                                   class="checkbox checkbox-primary checkbox-sm project-category-checkbox" />
-
-                                            <span>@category.Name</span>
-                                        </label>
-                                    }
-
-                                </div>
-                            </div>
-                        </details>
-                    </div>
-
-                    <div class="xl:col-span-3">
-                        <label class="label">
-                            <span class="label-text text-white/80">Project Tags</span>
-                        </label>
-
-                        <details class="project-filter-dropdown dropdown w-full">
-                            <summary class="btn btn-outline w-full justify-between text-white">
-                                <span id="selected-tag-count">Select tags</span>
-                                <span class="text-xs text-white/50">▼</span>
-                            </summary>
-
-                            <div class="dropdown-content z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-box border border-white/15 bg-base-300 p-4 shadow-xl">
-                                <div class="space-y-3">
-
-                                    @foreach (var tag in Model.Tags)
-                                    {
-                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1 text-sm text-white/75 hover:bg-white/10">
-                                            <input type="checkbox"
-                                                   name="TagSlugs"
-                                                   value="@tag.Slug"
-                                                   checked="@Model.Filter.TagSlugs.Contains(tag.Slug)"
-                                                   class="checkbox checkbox-primary checkbox-sm project-tag-checkbox" />
-
-                                            <span>@tag.Name</span>
-                                        </label>
-                                    }
-
-                                </div>
-                            </div>
-                        </details>
-                    </div>
-
-                    <div class="xl:col-span-3">
-                        <label class="label">
-                            <span class="label-text text-white/80">Project Name</span>
-                        </label>
-
-                        <input type="text" name="Search" value="@Model.Filter.Search" placeholder="Search projects..." class="input input-bordered w-full" />
-                    </div>
-
-                    <div class="xl:col-span-2">
-                        <button type="submit" class="btn btn-primary w-full">
-                            Search Projects
-                        </button>
-                    </div>
-
-                    <div class="xl:col-span-1">
-                        <button type="button" id="clear-project-filters" class="btn btn-outline w-full">
-                            Clear
-                        </button>
-                    </div>
-                </div>
             </div>
 
-        </form>
+            <form id="project-filter-form"
+                  asp-controller="Projects"
+                  asp-action="Search"
+                  method="get"
+                  class="mt-10 border border-[#22ee29]/15 bg-black/25 p-4">
 
-        <div id="project-results">
-            @await Html.PartialAsync("_ProjectCards", Model.Projects)
+                <input type="hidden" id="project-page-number" name="PageNumber" value="@Model.Filter.PageNumber" />
+                <input type="hidden" name="PageSize" value="@Model.Filter.PageSize" />
+
+                <label class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                    Search projects
+                </label>
+
+                <div class="mt-3 grid gap-3 lg:grid-cols-[16rem_16rem_minmax(0,1fr)_auto_auto]">
+                    <details class="project-filter-dropdown relative">
+                        <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300 transition hover:border-[#22ee29]/40">
+                            <span id="selected-category-count">Select categories</span>
+                            <span class="text-[#6ef967]/70">▾</span>
+                        </summary>
+
+                        <div class="about-scrollbar absolute z-50 mt-2 max-h-72 w-full overflow-y-auto border border-[#22ee29]/20 bg-zinc-950 p-3 shadow-xl shadow-black/40">
+                            <div class="space-y-2">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <label class="flex cursor-pointer items-center gap-3 border border-transparent px-2 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-zinc-400 transition hover:border-[#22ee29]/15 hover:bg-[#22ee29]/[0.04] hover:text-zinc-200">
+                                        <input type="checkbox"
+                                               name="CategorySlugs"
+                                               value="@category.Slug"
+                                               checked="@Model.Filter.CategorySlugs.Contains(category.Slug)"
+                                               class="checkbox checkbox-primary checkbox-xs rounded-none project-category-checkbox" />
+
+                                        <span>@category.Name</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="project-filter-dropdown relative">
+                        <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300 transition hover:border-[#22ee29]/40">
+                            <span id="selected-tag-count">Select tags</span>
+                            <span class="text-[#6ef967]/70">▾</span>
+                        </summary>
+
+                        <div class="about-scrollbar absolute z-50 mt-2 max-h-72 w-full overflow-y-auto border border-[#22ee29]/20 bg-zinc-950 p-3 shadow-xl shadow-black/40">
+                            <div class="space-y-2">
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <label class="flex cursor-pointer items-center gap-3 border border-transparent px-2 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-zinc-400 transition hover:border-[#22ee29]/15 hover:bg-[#22ee29]/[0.04] hover:text-zinc-200">
+                                        <input type="checkbox"
+                                               name="TagSlugs"
+                                               value="@tag.Slug"
+                                               checked="@Model.Filter.TagSlugs.Contains(tag.Slug)"
+                                               class="checkbox checkbox-primary checkbox-xs rounded-none project-tag-checkbox" />
+
+                                        <span>@tag.Name</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </details>
+
+                    <input type="text"
+                           name="Search"
+                           value="@Model.Filter.Search"
+                           placeholder="Search by project name..."
+                           class="min-h-11 border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+
+                    <button type="submit"
+                            class="min-h-11 border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-5 font-mono text-xs uppercase tracking-[0.18em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                        Search
+                    </button>
+
+                    <button type="button"
+                            id="clear-project-filters"
+                            class="min-h-11 border border-zinc-700/80 px-5 font-mono text-xs uppercase tracking-[0.18em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                        Clear
+                    </button>
+                </div>
+            </form>
+
+            <div id="project-results" class="mt-10">
+                @await Html.PartialAsync("_ProjectCards", Model.Projects)
+            </div>
+
         </div>
-
-    </div>
-</section>
+    </section>
+</div>
 
 <script src="~/js/projects.js" asp-append-version="true"></script>
