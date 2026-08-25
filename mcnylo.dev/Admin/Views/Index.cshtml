@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Admin";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl">
+        <header class="mb-10 flex flex-col gap-4 border-b border-[#22ee29]/15 pb-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Admin
+                </p>
+
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Site Configuration
+                </h1>
+
+                <p class="mt-4 max-w-2xl text-base text-white/60">
+                    Select a page to configure.
+                </p>
+            </div>
+
+            <form method="post" action="/admin/logout">
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="min-h-10 border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                    Logout
+                </button>
+            </form>
+        </header>
+
+        <div class="grid gap-4 md:grid-cols-3">
+            <a href="/admin/articles"
+               class="group border border-[#22ee29]/15 bg-black/25 p-5 transition hover:border-[#22ee29]/40 hover:bg-[#22ee29]/[0.04]">
+                <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/70">
+                    Articles
+                </p>
+                <h2 class="mt-3 text-2xl font-semibold text-zinc-100 group-hover:text-[#6ef967]">
+                    Article Control
+                </h2>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">
+                    Create, edit, preview, publish, unpublish, and delete articles.
+                </p>
+            </a>
+
+            <a href="/admin/projects"
+               class="group border border-[#22ee29]/15 bg-black/25 p-5 transition hover:border-[#22ee29]/40 hover:bg-[#22ee29]/[0.04]">
+                <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/70">
+                    Projects
+                </p>
+                <h2 class="mt-3 text-2xl font-semibold text-zinc-100 group-hover:text-[#6ef967]">
+                    Project Control
+                </h2>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">
+                    Create, edit, and delete portfolio projects.
+                </p>
+            </a>
+
+            <a href="/admin/about"
+               class="group border border-[#22ee29]/15 bg-black/25 p-5 transition hover:border-[#22ee29]/40 hover:bg-[#22ee29]/[0.04]">
+                <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/70">
+                    About
+                </p>
+                <h2 class="mt-3 text-2xl font-semibold text-zinc-100 group-hover:text-[#6ef967]">
+                    About Control
+                </h2>
+                <p class="mt-3 text-sm leading-6 text-zinc-400">
+                    Edit the content and details shown on the About page.
+                </p>
+            </a>
+        </div>
+    </div>
+</section>

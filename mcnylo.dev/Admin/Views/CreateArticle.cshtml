@@ -1,0 +1,307 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Articles.AdminArticleFormVM
+
+@{
+    ViewData["Title"] = "Create Article";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl">
+        <header class="mb-10 flex flex-col gap-4 border-b border-[#22ee29]/15 pb-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Admin / Articles
+                </p>
+
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Create Article
+                </h1>
+
+                <p class="mt-4 max-w-2xl text-base text-white/60">
+                    Draft or publish a new article record.
+                </p>
+            </div>
+
+            <a href="/admin/articles"
+               class="inline-flex min-h-10 items-center justify-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                Cancel
+            </a>
+        </header>
+
+        <form method="post" action="/admin/articles/create" enctype="multipart/form-data" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            @Html.AntiForgeryToken()
+
+            <div class="space-y-5">
+                <div>
+                    <label asp-for="ArticleTitle" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Title
+                    </label>
+                    <input asp-for="ArticleTitle"
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="ArticleTitle" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ArticleSlug" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Slug
+                    </label>
+                    <input asp-for="ArticleSlug"
+                           placeholder="my-new-article"
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="ArticleSlug" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ShortDescription" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Short Description
+                    </label>
+                    <textarea asp-for="ShortDescription"
+                              rows="3"
+                              class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 py-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30"></textarea>
+                    <span asp-validation-for="ShortDescription" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="MarkdownContent" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Markdown Content
+                    </label>
+                    <textarea asp-for="MarkdownContent"
+                              id="article-markdown-content"
+                              rows="18"
+                              class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 py-3 font-mono text-sm leading-6 text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30"></textarea>
+                    <span asp-validation-for="MarkdownContent" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+            </div>
+
+            <aside class="space-y-5">
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label asp-for="ArticleCategoryId" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Category
+                    </label>
+
+                    <select asp-for="ArticleCategoryId"
+                            class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30">
+                        <option value="">No category</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="ArticleCategoryId" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Tags
+                    </p>
+
+                    <div class="about-scrollbar mt-3 max-h-48 space-y-2 overflow-y-auto pr-1">
+                        @if (Model.AvailableTags.Count == 0)
+                        {
+                            <p class="font-mono text-xs uppercase tracking-[0.14em] text-zinc-500">
+                                No tags found.
+                            </p>
+                        }
+                        else
+                        {
+                            @foreach (var tag in Model.AvailableTags)
+                            {
+                                <label class="flex cursor-pointer items-center gap-3 border border-transparent px-2 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-zinc-400 transition hover:border-[#22ee29]/15 hover:bg-[#22ee29]/[0.04] hover:text-zinc-200">
+                                    <input type="checkbox"
+                                           name="SelectedTagIds"
+                                           value="@tag.Id"
+                                           checked="@Model.SelectedTagIds.Contains(tag.Id)"
+                                           class="checkbox checkbox-primary checkbox-xs rounded-none" />
+
+                                    <span>@tag.TagName</span>
+                                </label>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label asp-for="PrimaryImageFile" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Primary Image Upload
+                    </label>
+                    <input asp-for="PrimaryImageFile"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                           class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 py-3 font-mono text-xs text-zinc-300 file:mr-3 file:border-0 file:bg-[#22ee29]/10 file:px-3 file:py-2 file:font-mono file:text-xs file:uppercase file:tracking-[0.14em] file:text-[#6ef967] hover:border-[#22ee29]/40" />
+                    <span asp-validation-for="PrimaryImageFile" class="mt-2 block text-sm text-red-300"></span>
+
+                    <label asp-for="PrimaryImagePath" class="mt-4 block font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Existing Image Path
+                    </label>
+                    <input asp-for="PrimaryImagePath"
+                           placeholder="/media/articles/..."
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="PrimaryImagePath" class="mt-2 block text-sm text-red-300"></span>
+
+                    <label asp-for="PrimaryImageAltText" class="mt-4 block font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Image Alt Text
+                    </label>
+                    <input asp-for="PrimaryImageAltText"
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="PrimaryImageAltText" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Markdown Image
+                    </p>
+
+                    <p class="mt-2 text-sm leading-6 text-zinc-500">
+                        Upload an inline image, then insert the generated Markdown into the article body.
+                    </p>
+
+                    <input id="inline-image-file"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                           class="mt-4 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 py-3 font-mono text-xs text-zinc-300 transition hover:border-[#22ee29]/40 file:mr-3 file:border file:border-[#22ee29]/30 file:bg-[#22ee29]/10 file:px-3 file:py-2 file:font-mono file:text-xs file:uppercase file:tracking-[0.14em] file:text-[#6ef967] file:transition hover:file:border-[#6ef967]/70 hover:file:bg-[#22ee29]/20 hover:file:shadow-[0_0_14px_rgba(34,238,41,0.18)]" />
+
+                    <input id="inline-image-alt-text"
+                           maxlength="250"
+                           placeholder="Alt text..."
+                           class="mt-3 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+
+                    <p id="inline-image-status" class="mt-3 hidden font-mono text-xs uppercase tracking-[0.14em]"></p>
+
+                    <code id="inline-image-markdown"
+                          class="mt-3 hidden block break-all border border-[#22ee29]/20 bg-zinc-950/70 p-3 font-mono text-xs leading-5 text-[#6ef967]"></code>
+
+                    <div class="mt-4 grid gap-2 sm:grid-cols-3">
+                        <button type="button" id="upload-inline-image"
+                                class="min-h-10 border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                            Upload
+                        </button>
+
+                        <button type="button" id="insert-inline-image" disabled
+                                class="min-h-10 border border-zinc-700/80 px-3 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition enabled:hover:border-[#22ee29]/35 enabled:hover:text-zinc-200 disabled:opacity-40">
+                            Insert
+                        </button>
+
+                        <button type="button" id="copy-inline-image" disabled
+                                class="min-h-10 border border-zinc-700/80 px-3 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition enabled:hover:border-[#22ee29]/35 enabled:hover:text-zinc-200 disabled:opacity-40">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label class="flex cursor-pointer items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
+                        <input asp-for="IsPublished"
+                               class="checkbox checkbox-primary checkbox-xs rounded-none" />
+                        <span>Publish now</span>
+                    </label>
+                </div>
+
+                <button type="submit"
+                        class="min-h-11 w-full border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-5 font-mono text-xs uppercase tracking-[0.18em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                    Create Article
+                </button>
+            </aside>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    let currentInlineImageMarkdown = "";
+
+    const uploadButton = document.getElementById("upload-inline-image");
+    const insertButton = document.getElementById("insert-inline-image");
+    const copyButton = document.getElementById("copy-inline-image");
+    const fileInput = document.getElementById("inline-image-file");
+    const altTextInput = document.getElementById("inline-image-alt-text");
+    const markdownOutput = document.getElementById("inline-image-markdown");
+    const statusOutput = document.getElementById("inline-image-status");
+    const markdownTextarea = document.getElementById("article-markdown-content");
+
+    function showInlineImageStatus(message, isError) {
+        if (!statusOutput) {
+            return;
+        }
+
+        statusOutput.textContent = message;
+        statusOutput.classList.remove("hidden", "text-red-300", "text-[#6ef967]");
+        statusOutput.classList.add(isError ? "text-red-300" : "text-[#6ef967]");
+    }
+
+    uploadButton?.addEventListener("click", async () => {
+        const token = document.querySelector("input[name='__RequestVerificationToken']")?.value;
+        const file = fileInput?.files?.[0];
+
+        if (!file) {
+            showInlineImageStatus("Choose an image to upload.", true);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("__RequestVerificationToken", token);
+        formData.append("imageFile", file);
+        formData.append("altText", altTextInput?.value ?? "");
+
+        uploadButton.disabled = true;
+        uploadButton.textContent = "Uploading...";
+
+        try {
+            const response = await fetch("/admin/articles/inline-image", {
+                method: "POST",
+                body: formData,
+                headers: { "X-Requested-With": "fetch" }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.errorMessage ?? "Image upload failed.");
+            }
+
+            currentInlineImageMarkdown = result.markdownSnippet;
+            markdownOutput.textContent = currentInlineImageMarkdown;
+            markdownOutput.classList.remove("hidden");
+            insertButton.disabled = false;
+            copyButton.disabled = false;
+
+            showInlineImageStatus("Image uploaded.", false);
+        }
+        catch (error) {
+            showInlineImageStatus(error.message, true);
+        }
+        finally {
+            uploadButton.disabled = false;
+            uploadButton.textContent = "Upload";
+        }
+    });
+
+    insertButton?.addEventListener("click", () => {
+        if (!currentInlineImageMarkdown || !markdownTextarea) {
+            return;
+        }
+
+        const start = markdownTextarea.selectionStart ?? markdownTextarea.value.length;
+        const end = markdownTextarea.selectionEnd ?? start;
+        const before = markdownTextarea.value.slice(0, start);
+        const after = markdownTextarea.value.slice(end);
+
+        const leading = before.length > 0 && !before.endsWith("\n") ? "\n\n" : "";
+        const trailing = after.length > 0 && !after.startsWith("\n") ? "\n\n" : "";
+
+        markdownTextarea.value = before + leading + currentInlineImageMarkdown + trailing + after;
+        markdownTextarea.focus();
+        markdownTextarea.selectionStart = markdownTextarea.selectionEnd = (before + leading + currentInlineImageMarkdown).length;
+    });
+
+    copyButton?.addEventListener("click", async () => {
+        if (!currentInlineImageMarkdown) {
+            return;
+        }
+
+        await navigator.clipboard.writeText(currentInlineImageMarkdown);
+        showInlineImageStatus("Markdown copied.", false);
+    });
+</script>

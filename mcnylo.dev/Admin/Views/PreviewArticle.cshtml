@@ -1,0 +1,90 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Articles.AdminArticlePreviewVM
+
+@{
+    ViewData["Title"] = $"Preview - {Model.ArticleTitle}";
+}
+
+<div class="archive-surface">
+    <section class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-3 border border-[#22ee29]/15 bg-black/25 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/70">
+                    Admin Preview
+                </p>
+
+                <p class="mt-1 font-mono text-xs uppercase tracking-[0.16em] @(Model.IsPublished ? "text-[#6ef967]" : "text-zinc-500")">
+                    @(Model.IsPublished ? "Published" : "Draft")
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="/admin/articles/@Model.Id/edit"
+                   class="inline-flex min-h-10 items-center justify-center border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-4 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                    Edit
+                </a>
+
+                <a href="/admin/articles"
+                   class="inline-flex min-h-10 items-center justify-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                    Back
+                </a>
+            </div>
+        </div>
+
+        <header class="mt-8 border-l border-[#22ee29]/30 pl-5">
+            <div class="flex flex-wrap items-center gap-3">
+                <p class="text-xs font-mono uppercase tracking-[0.25em] text-emerald-400/60">
+                    @(string.IsNullOrWhiteSpace(Model.CategoryName) ? "Article" : Model.CategoryName)
+                </p>
+
+                @if (Model.Tags.Count > 0)
+                {
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <span class="border border-[#22ee29]/20 bg-emerald-400/[0.03] px-2 py-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-[#6ef967]/70">
+                                @tag
+                            </span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight text-zinc-100 sm:text-5xl">
+                @Model.ArticleTitle
+            </h1>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <p class="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
+                    @Model.ShortDescription
+                </p>
+            }
+
+            @if (Model.PublishedOn.HasValue)
+            {
+                <p class="mt-4 text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">
+                    Published @Model.PublishedOn.Value.ToString("MMM dd, yyyy")
+                </p>
+            }
+            else
+            {
+                <p class="mt-4 text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">
+                    Unpublished draft
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.PrimaryImagePath))
+            {
+                <figure class="mt-10 overflow-hidden border border-[#22ee29]/15 bg-black/30">
+                    <img src="@Model.PrimaryImagePath"
+                         alt="@(string.IsNullOrWhiteSpace(Model.PrimaryImageAltText) ? Model.ArticleTitle : Model.PrimaryImageAltText)"
+                         class="aspect-[16/7] w-full object-cover opacity-90" />
+                </figure>
+            }
+        </header>
+
+        <article class="article-markdown mt-12 border-t border-[#22ee29]/15 pt-10 text-zinc-300">
+            @Html.Raw(Model.HtmlContent)
+        </article>
+    </section>
+</div>

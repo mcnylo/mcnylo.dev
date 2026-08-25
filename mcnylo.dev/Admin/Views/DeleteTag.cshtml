@@ -1,0 +1,71 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Tags.AdminTagDeleteVM
+
+@{
+    ViewData["Title"] = "Delete Global Tag";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-3xl">
+        <header class="mb-10 border-b border-red-500/20 pb-8">
+            <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-red-300">
+                // Admin / Global Tags / Delete
+            </p>
+
+            <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                Delete Tag
+            </h1>
+
+            <p class="mt-4 max-w-2xl text-base text-white/60">
+                Confirm this action before removing this global tag.
+            </p>
+        </header>
+
+        <div class="border border-red-500/25 bg-red-950/10 p-6">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-red-300">
+                Global Destructive Action
+            </p>
+
+            <h2 class="mt-3 text-2xl font-semibold text-zinc-100">
+                @Model.TagName
+            </h2>
+
+            <dl class="mt-5 grid gap-4 border-t border-red-500/15 pt-5 sm:grid-cols-2">
+                <div>
+                    <dt class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">Slug</dt>
+                    <dd class="mt-1 font-mono text-sm text-zinc-300">@Model.TagSlug</dd>
+                </div>
+
+                <div>
+                    <dt class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">Linked Articles</dt>
+                    <dd class="mt-1 font-mono text-sm text-zinc-300">@Model.ArticleCount</dd>
+                </div>
+
+                <div>
+                    <dt class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">Linked Projects</dt>
+                    <dd class="mt-1 font-mono text-sm text-zinc-300">@Model.ProjectCount</dd>
+                </div>
+            </dl>
+
+            <p class="mt-6 text-sm leading-6 text-red-200/80">
+                This removes the tag from the global tag table. It will also remove this tag from linked articles and projects.
+            </p>
+
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                <form method="post" action="/admin/tags/@Model.Id/delete">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <button type="submit"
+                            class="min-h-11 border border-red-400/40 bg-red-500/10 px-5 font-mono text-xs uppercase tracking-[0.18em] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
+                        Delete Tag
+                    </button>
+                </form>
+
+                <a href="@Model.ReturnUrl"
+                   class="inline-flex min-h-11 items-center justify-center border border-zinc-700/80 px-5 font-mono text-xs uppercase tracking-[0.18em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

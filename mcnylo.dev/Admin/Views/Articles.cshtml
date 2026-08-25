@@ -1,0 +1,243 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Articles.AdminArticleListVM
+
+@{
+    ViewData["Title"] = "Admin Articles";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+
+        <a href="/admin" class="text-sm font-mono uppercase tracking-[0.2em] text-emerald-400/70 hover:text-[#6ef967]">
+            ← Back
+        </a>
+
+        <header class="mb-10 flex flex-col gap-4 border-b border-[#22ee29]/15 py-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Admin / Articles
+                </p>
+
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Article Control
+                </h1>
+
+                <p class="mt-4 max-w-2xl text-base text-white/60">
+                    Review all article records, including drafts and unpublished entries.
+                </p>
+            </div>
+
+            <div>
+                <a href="/admin/tags?returnUrl=/admin/articles"
+                   class="inline-flex min-h-10 items-center justify-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                    Tags
+                </a>
+                <a href="/admin/article-categories"
+                   class="inline-flex min-h-10 items-center justify-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                    Categories
+                </a>
+                <a href="/admin/articles/create"
+                   class="inline-flex min-h-10 items-center justify-center border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-4 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                    New Article
+                </a>
+            </div>
+        </header>
+
+        <form method="get" action="/admin/articles" class="mb-10 border border-[#22ee29]/15 bg-black/25 p-4">
+            <input type="hidden" name="pageNumber" value="1" />
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+
+            <label for="admin-article-search" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                Search articles
+            </label>
+
+            <div class="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_12rem_auto_auto]">
+                <input id="admin-article-search"
+                       name="search"
+                       value="@Model.Search"
+                       type="search"
+                       placeholder="Search by title or slug..."
+                       class="min-h-11 border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+
+                <select name="status"
+                        class="min-h-11 border border-[#22ee29]/20 bg-zinc-950/70 px-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30">
+                    <option value="all" selected="@(Model.Status == "all")">All</option>
+                    <option value="published" selected="@(Model.Status == "published")">Published</option>
+                    <option value="draft" selected="@(Model.Status == "draft")">Draft</option>
+                </select>
+
+                <button type="submit"
+                        class="min-h-11 border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-5 font-mono text-xs uppercase tracking-[0.18em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                    Search
+                </button>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Search) || Model.Status != "all")
+                {
+                    <a href="/admin/articles"
+                       class="inline-flex min-h-11 items-center justify-center border border-zinc-700/80 px-5 font-mono text-xs uppercase tracking-[0.18em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                        Clear
+                    </a>
+                }
+            </div>
+
+            <p class="mt-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">
+                @Model.TotalArticles article@(Model.TotalArticles == 1 ? "" : "s") found
+            </p>
+        </form>
+
+        @if (Model.Articles.Count == 0)
+        {
+            <div class="border-t border-[#22ee29]/15 py-12">
+                <p class="font-mono text-sm uppercase tracking-[0.2em] text-zinc-500">
+                    No articles found.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto border border-[#22ee29]/15 bg-black/25">
+                <table class="w-full min-w-[56rem] text-left">
+                    <thead class="border-b border-[#22ee29]/15">
+                        <tr>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Title</th>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Category</th>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Status</th>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Created</th>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Updated</th>
+                            <th class="px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/70">Published</th>
+                            <th class="px-4 py-3"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-[#22ee29]/10">
+                        @foreach (var article in Model.Articles)
+                        {
+                            <tr class="transition hover:bg-[#22ee29]/[0.035]">
+                                <td class="px-4 py-4">
+                                    <p class="font-semibold text-zinc-100">@article.ArticleTitle</p>
+                                    <p class="mt-1 font-mono text-xs text-zinc-500">@article.ArticleSlug</p>
+                                </td>
+
+                                <td class="px-4 py-4 font-mono text-xs uppercase tracking-[0.14em] text-zinc-400">
+                                    @(string.IsNullOrWhiteSpace(article.CategoryName) ? "None" : article.CategoryName)
+                                </td>
+
+                                <td class="px-4 py-4">
+                                    @if (article.IsPublished)
+                                    {
+                                        <span class="inline-flex border border-[#22ee29]/25 bg-[#22ee29]/[0.07] px-2 py-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[#6ef967]">
+                                            Published
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex border border-zinc-700/80 bg-zinc-950/60 px-2 py-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-zinc-400">
+                                            Draft
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="px-4 py-4 font-mono text-xs text-zinc-500">
+                                    @article.CreatedOn.ToString("MMM dd, yyyy")
+                                </td>
+
+                                <td class="px-4 py-4 font-mono text-xs text-zinc-500">
+                                    @(article.UpdatedOn.HasValue ? article.UpdatedOn.Value.ToString("MMM dd, yyyy") : "-")
+                                </td>
+
+                                <td class="px-4 py-4 font-mono text-xs text-zinc-500">
+                                    @(article.PublishedOn.HasValue ? article.PublishedOn.Value.ToString("MMM dd, yyyy") : "-")
+                                </td>
+
+                                <td class="px-4 py-4 text-right">
+                                    <div class="flex justify-end gap-4">
+                                        <a href="/admin/articles/@article.Id/edit"
+                                           class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:text-[#6ef967]">
+                                            Edit
+                                        </a>
+
+                                        @if (article.IsPublished)
+                                        {
+                                            <a href="/articles/@article.ArticleSlug"
+                                               target="_blank"
+                                               class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:text-[#6ef967]">
+                                                View
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/admin/articles/@article.Id/preview"
+                                               class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:text-[#6ef967]">
+                                                Preview
+                                            </a>
+                                        }
+
+                                        <a href="/admin/articles/@article.Id/delete"
+                                           class="font-mono text-xs uppercase tracking-[0.16em] text-red-300/80 transition hover:text-red-200">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-10 flex flex-col gap-3 border-t border-[#22ee29]/15 pt-6 sm:flex-row sm:items-center sm:justify-between"
+                 aria-label="Admin article pagination">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500">
+                    Page @Model.PageNumber of @Model.TotalPages
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                    @if (Model.PageNumber > 1)
+                    {
+                        <a href="@BuildAdminArticlePageUrl(Model.PageNumber - 1)"
+                           class="inline-flex min-h-10 items-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                            Prev
+                        </a>
+                    }
+
+                    @for (var pageIndex = 1; pageIndex <= Model.TotalPages; pageIndex++)
+                    {
+                        <a href="@BuildAdminArticlePageUrl(pageIndex)"
+                           class="inline-flex min-h-10 min-w-10 items-center justify-center border px-3 font-mono text-xs uppercase tracking-[0.16em] transition @(pageIndex == Model.PageNumber ? "border-[#22ee29]/60 bg-[#22ee29]/[0.08] text-[#6ef967]" : "border-zinc-700/80 text-zinc-400 hover:border-[#22ee29]/35 hover:text-zinc-200")">
+                            @pageIndex
+                        </a>
+                    }
+
+                    @if (Model.PageNumber < Model.TotalPages)
+                    {
+                        <a href="@BuildAdminArticlePageUrl(Model.PageNumber + 1)"
+                           class="inline-flex min-h-10 items-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                            Next
+                        </a>
+                    }
+                </div>
+            </nav>
+        }
+
+    </div>
+</section>
+
+@functions {
+    private string BuildAdminArticlePageUrl(int pageNumber)
+    {
+        var queryValues = new List<string>
+        {
+            $"pageNumber={pageNumber}",
+            $"pageSize={Model.PageSize}",
+            $"status={Uri.EscapeDataString(Model.Status)}"
+        };
+
+        if (!string.IsNullOrWhiteSpace(Model.Search))
+        {
+            queryValues.Add($"search={Uri.EscapeDataString(Model.Search)}");
+        }
+
+        return $"/admin/articles?{string.Join("&", queryValues)}";
+    }
+}

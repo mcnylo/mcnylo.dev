@@ -9,13 +9,9 @@
 
   <ItemGroup>
     <Compile Remove="About\ViewModels\**" />
-    <Compile Remove="Admin\**" />
     <Content Remove="About\ViewModels\**" />
-    <Content Remove="Admin\**" />
     <EmbeddedResource Remove="About\ViewModels\**" />
-    <EmbeddedResource Remove="Admin\**" />
     <None Remove="About\ViewModels\**" />
-    <None Remove="Admin\**" />
   </ItemGroup>
 
   <ItemGroup>

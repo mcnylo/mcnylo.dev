@@ -98,6 +98,10 @@ namespace mcnylo.dev.Data.Context
                 .HasMaxLength(250);
 
             modelBuilder.Entity<Article>()
+            .Property(article => article.IsPublished)
+            .HasColumnType("bit(1)");
+
+            modelBuilder.Entity<Article>()
                 .HasOne(article => article.ArticleCategory)
                 .WithMany(articleCategory => articleCategory.Articles)
                 .HasForeignKey(article => article.ArticleCategoryId)

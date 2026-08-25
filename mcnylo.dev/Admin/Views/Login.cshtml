@@ -1,0 +1,48 @@
+﻿@model mcnylo.dev.Admin.ViewModels.AdminLoginVM
+
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-md">
+        <header class="mb-8 text-center">
+            <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                // Admin
+            </p>
+        </header>
+
+        <form method="post" action="/admin/login" class="border border-[#22ee29]/15 bg-black/25 p-5">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+                <p class="mb-4 border border-red-500/30 bg-red-950/30 px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-red-300">
+                    @Model.ErrorMessage
+                </p>
+            }
+
+            <label asp-for="Username" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                Username
+            </label>
+            <input asp-for="Username"
+                   autocomplete="username"
+                   class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+
+            <label asp-for="Password" class="mt-5 block font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                Password
+            </label>
+            <input asp-for="Password"
+                   type="password"
+                   autocomplete="current-password"
+                   class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+
+            <button type="submit"
+                    class="mt-6 min-h-11 w-full border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-5 font-mono text-xs uppercase tracking-[0.18em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                Sign In
+            </button>
+        </form>
+    </div>
+</section>
