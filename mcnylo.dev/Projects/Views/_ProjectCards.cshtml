@@ -70,34 +70,40 @@ else
 
     @if (Model.TotalPages > 1)
     {
-        <div class="mt-10 flex flex-col items-center justify-between gap-4 rounded-box border border-white/10 bg-base-300/50 p-4 sm:flex-row">
-            <p class="text-sm text-white/60">
-                Showing page @Model.PageNumber of @Model.TotalPages
-                <span class="text-white/40">(@Model.TotalProjects projects)</span>
+        <nav class="mt-10 flex flex-col gap-3 border-t border-[#22ee29]/15 pt-6 sm:flex-row sm:items-center sm:justify-between"
+             aria-label="Project pagination">
+            <p class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500">
+                Page @Model.PageNumber of @Model.TotalPages
             </p>
 
-            <div class="join">
-                <button type="button"
-                        class="btn join-item btn-sm @(Model.HasPreviousPage ? "" : "btn-disabled")"
-                        data-project-page="@(Model.PageNumber - 1)">
-                    Previous
-                </button>
-
-                @for (int pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+            <div class="flex flex-wrap gap-2">
+                @if (Model.HasPreviousPage)
                 {
                     <button type="button"
-                            class="btn join-item btn-sm @(pageNumber == Model.PageNumber ? "btn-primary" : "")"
-                            data-project-page="@pageNumber">
-                        @pageNumber
+                            class="inline-flex min-h-10 items-center border border-zinc-700/80 bg-transparent px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200"
+                            data-project-page="@(Model.PageNumber - 1)">
+                        Prev
                     </button>
                 }
 
-                <button type="button"
-                        class="btn join-item btn-sm @(Model.HasNextPage ? "" : "btn-disabled")"
-                        data-project-page="@(Model.PageNumber + 1)">
-                    Next
-                </button>
+                @for (var pageIndex = 1; pageIndex <= Model.TotalPages; pageIndex++)
+                {
+                    <button type="button"
+                            class="inline-flex min-h-10 min-w-10 items-center justify-center border bg-transparent px-3 font-mono text-xs uppercase tracking-[0.16em] transition @(pageIndex == Model.PageNumber ? "border-[#22ee29]/60 bg-[#22ee29]/[0.08] text-[#6ef967]" : "border-zinc-700/80 text-zinc-400 hover:border-[#22ee29]/35 hover:text-zinc-200")"
+                            data-project-page="@pageIndex">
+                        @pageIndex
+                    </button>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <button type="button"
+                            class="inline-flex min-h-10 items-center border border-zinc-700/80 bg-transparent px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200"
+                            data-project-page="@(Model.PageNumber + 1)">
+                        Next
+                    </button>
+                }
             </div>
-        </div>
+        </nav>
     }
 }
