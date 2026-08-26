@@ -1,17 +1,22 @@
 ﻿using mcnylo.dev.Admin.ViewModels;
 using mcnylo.dev.Admin.ViewModels.Articles;
+using mcnylo.dev.Admin.ViewModels.Projects;
 using mcnylo.dev.Admin.ViewModels.Tags;
 using mcnylo.dev.Articles.Services;
 using mcnylo.dev.Data.Models;
 using mcnylo.dev.Media.Services.Articles;
+using mcnylo.dev.Media.Services.Projects;
+using mcnylo.dev.Projects.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace mcnylo.dev.Admin.Controllers
 {
@@ -21,21 +26,28 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IArticleService _articleService;
         private readonly IArticleImageUploadService _articleImageUploadService;
         private readonly IArticleMarkdownService _markdownService;
+        private readonly IProjectService _projectService;
+        private readonly IProjectImageUploadService _projectImageUploadService;
 
         // ========================================================================================
 
         public AdminController(IConfiguration configuration, 
             IArticleService articleService, 
             IArticleImageUploadService articleImageUploadService,
-            IArticleMarkdownService markdownService)
+            IArticleMarkdownService markdownService,
+            IProjectService projectService,
+            IProjectImageUploadService projectImageUploadService)
         {
             _configuration = configuration;
             _articleService = articleService;
             _articleImageUploadService = articleImageUploadService;
             _markdownService = markdownService;
+            _projectService = projectService;
+            _projectImageUploadService = projectImageUploadService;
         }
 
         // ========================================================================================
+        // ARTICLES ===============================================================================
 
         [Authorize]
         [HttpGet("/admin")]
@@ -508,6 +520,185 @@ namespace mcnylo.dev.Admin.Controllers
             return RedirectToAction(nameof(ArticleCategories));
         }
 
+        // PROJECTS ===============================================================================
+
+        [Authorize]
+        [HttpGet("/admin/projects")]
+        public async Task<IActionResult> Projects(string? search = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var viewModel = await _projectService.GetAdminProjectResultsAsync(search, pageNumber, pageSize);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/project-categories")]
+        public async Task<IActionResult> ProjectCategories(int pageNumber = 1, int pageSize = 10, string? returnUrl = null)
+        {
+            var vm = await _projectService.GetAdminProjectCategoryResultsAsync(pageNumber, pageSize);
+
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/projects";
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/project-categories/create")]
+        public IActionResult CreateProjectCategory(string? returnUrl = null)
+        {
+            return View(new AdminProjectCategoryFormVM
+            {
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/project-categories"
+            });
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/project-categories/create")]
+        public async Task<IActionResult> CreateProjectCategory(AdminProjectCategoryFormVM vm)
+        {
+            vm.CategoryName = vm.CategoryName?.Trim() ?? "";
+            vm.CategorySlug = vm.CategorySlug?.Trim().ToLowerInvariant() ?? "";
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/project-categories";
+
+            if (await _projectService.ProjectCategorySlugExistsAsync(vm.CategorySlug))
+            {
+                ModelState.AddModelError(nameof(vm.CategorySlug), "A project category with this slug already exists.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            var category = new ProjectCategory
+            {
+                CategoryName = vm.CategoryName,
+                CategorySlug = vm.CategorySlug
+            };
+
+            await _projectService.CreateProjectCategoryAsync(category);
+
+            return Redirect(vm.ReturnUrl);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/project-categories/{id:int}/edit")]
+        public async Task<IActionResult> EditProjectCategory(int id, string? returnUrl = null)
+        {
+            var category = await _projectService.GetProjectCategoryByIdAsync(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminProjectCategoryFormVM
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                CategorySlug = category.CategorySlug,
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/project-categories"
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/project-categories/{id:int}/edit")]
+        public async Task<IActionResult> EditProjectCategory(int id, AdminProjectCategoryFormVM vm)
+        {
+            if (id != vm.Id)
+            {
+                return BadRequest();
+            }
+
+            vm.CategoryName = vm.CategoryName?.Trim() ?? "";
+            vm.CategorySlug = vm.CategorySlug?.Trim().ToLowerInvariant() ?? "";
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/project-categories";
+
+            var category = await _projectService.GetProjectCategoryByIdAsync(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (await _projectService.ProjectCategorySlugExistsAsync(vm.CategorySlug, id))
+            {
+                ModelState.AddModelError(nameof(vm.CategorySlug), "A project category with this slug already exists.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            category.CategoryName = vm.CategoryName;
+            category.CategorySlug = vm.CategorySlug;
+
+            await _projectService.UpdateProjectCategoryAsync(category);
+
+            return Redirect(vm.ReturnUrl);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/project-categories/{id:int}/delete")]
+        public async Task<IActionResult> DeleteProjectCategory(int id, string? returnUrl = null)
+        {
+            var category = await _projectService.GetProjectCategoryDeleteDetailsAsync(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminProjectCategoryDeleteVM
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                CategorySlug = category.CategorySlug,
+                ProjectCount = category.Projects.Count,
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/project-categories"
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/project-categories/{id:int}/delete")]
+        public async Task<IActionResult> DeleteProjectCategoryConfirmed(int id, AdminProjectCategoryDeleteVM vm)
+        {
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/project-categories";
+
+            var category = await _projectService.GetProjectCategoryDeleteDetailsAsync(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (category.Projects.Count > 0)
+            {
+                ModelState.AddModelError("", "This category cannot be deleted while projects are using it.");
+
+                vm.Id = category.Id;
+                vm.CategoryName = category.CategoryName;
+                vm.CategorySlug = category.CategorySlug;
+                vm.ProjectCount = category.Projects.Count;
+
+                return View("DeleteProjectCategory", vm);
+            }
+
+            await _projectService.DeleteProjectCategoryAsync(id);
+
+            return Redirect(vm.ReturnUrl);
+        }
+
+        // TAGS ===================================================================================
+
         [Authorize]
         [HttpGet("/admin/tags")]
         public async Task<IActionResult> Tags(int pageNumber = 1, int pageSize = 10, string? returnUrl = null)
@@ -692,6 +883,90 @@ namespace mcnylo.dev.Admin.Controllers
             });
         }
 
+        [Authorize]
+        [HttpGet("/admin/projects/create")]
+        public async Task<IActionResult> CreateProject()
+        {
+            var vm = new AdminProjectFormVM
+            {
+                PrimaryMediaIndex = 0,
+                MediaItems =
+                [
+                    new AdminProjectMediaFormVM
+                    {
+                        MediaType = "IMAGE",
+                        SortOrder = 0,
+                        PrimaryMediaIndex  = 0
+                    }
+                ]
+            };
+
+            return View(await PopulateProjectFormOptionsAsync(vm));
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/projects/create")]
+        public async Task<IActionResult> CreateProject(AdminProjectFormVM vm)
+        {
+            vm.ProjectTitle = vm.ProjectTitle?.Trim() ?? "";
+            vm.ProjectSlug = vm.ProjectSlug?.Trim().ToLowerInvariant() ?? "";
+            vm.ShortDescription = vm.ShortDescription?.Trim() ?? "";
+            vm.LongDescription = vm.LongDescription?.Trim() ?? "";
+            vm.RepositoryURL = vm.RepositoryURL?.Trim() ?? "";
+
+            if (await _projectService.ProjectSlugExistsAsync(vm.ProjectSlug))
+            {
+                ModelState.AddModelError(nameof(vm.ProjectSlug), "A project with this slug already exists.");
+            }
+
+            var categoryIds = (await _projectService.GetProjectCategoriesAsync()).Select(category => category.Id).ToHashSet();
+
+            if (!categoryIds.Contains(vm.CategoryId))
+            {
+                ModelState.AddModelError(nameof(vm.CategoryId), "Select a valid category.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(vm.RepositoryURL) 
+                && (!Uri.TryCreate(vm.RepositoryURL, UriKind.Absolute, out var repositoryUri) || repositoryUri.Scheme is not ("http" or "https")))
+            {
+                ModelState.AddModelError(nameof(vm.RepositoryURL), "Enter a valid repository URL.");
+            }
+
+            NormalizeProjectMediaRows(vm);
+            ValidateProjectMediaRows(vm);
+
+            if (!ModelState.IsValid)
+            {
+                return View(await PopulateProjectFormOptionsAsync(vm));
+            }
+
+            var mediaItems = await BuildProjectMediaItemsAsync(vm);
+
+            if (!ModelState.IsValid)
+            {
+                return View(await PopulateProjectFormOptionsAsync(vm));
+            }
+
+            var now = DateTime.UtcNow;
+
+            var project = new Project
+            {
+                ProjectTitle = vm.ProjectTitle,
+                ProjectSlug = vm.ProjectSlug,
+                ShortDescription = vm.ShortDescription,
+                LongDescription = vm.LongDescription,
+                CategoryId = vm.CategoryId,
+                RepositoryURL = vm.RepositoryURL,
+                IsFeatured = vm.IsFeatured,
+                CreatedOn = now
+            };
+
+            await _projectService.CreateProjectAsync(project, vm.SelectedTagIds, mediaItems);
+
+            return RedirectToAction(nameof(Projects));
+        }
+
         // ========================================================================================
 
         private static bool SecureEquals(string? value, string? expectedValue)
@@ -720,6 +995,181 @@ namespace mcnylo.dev.Admin.Controllers
                 .ToList();
 
             return vm;
+        }
+        private async Task<AdminProjectFormVM> PopulateProjectFormOptionsAsync(AdminProjectFormVM vm)
+        {
+            vm.Categories = (await _projectService.GetProjectCategoriesAsync())
+                .Select(category => new AdminProjectCategoryOptionVM
+                {
+                    Id = category.Id,
+                    CategoryName = category.CategoryName
+                })
+                .ToList();
+
+            vm.AvailableTags = (await _projectService.GetAllTagsAsync())
+                .Select(tag => new AdminProjectTagOptionVM
+                {
+                    Id = tag.Id,
+                    TagName = tag.TagName
+                })
+                .ToList();
+
+            if (vm.MediaItems.Count == 0)
+            {
+                vm.MediaItems.Add(new AdminProjectMediaFormVM
+                {
+                    MediaType = "IMAGE",
+                    SortOrder = 0,
+                    PrimaryMediaIndex = 0
+                });
+            }
+
+            return vm;
+        }
+        private static void NormalizeProjectMediaRows(AdminProjectFormVM vm)
+        {
+            vm.MediaItems = vm.MediaItems.Where(media => media.ImageFile != null 
+                || !string.IsNullOrWhiteSpace(media.YouTubeUrl) 
+                || !string.IsNullOrWhiteSpace(media.AltText))
+                .ToList();
+
+            for (var index = 0; index < vm.MediaItems.Count; index++)
+            {
+                var media = vm.MediaItems[index];
+
+                media.MediaType = media.MediaType?.Trim().ToUpperInvariant() == "VIDEO" ? "VIDEO" : "IMAGE";
+                media.YouTubeUrl = media.YouTubeUrl?.Trim() ?? "";
+                media.AltText = media.AltText?.Trim() ?? "";
+                media.SortOrder = index;
+            }
+
+            if (vm.PrimaryMediaIndex < 0 || vm.PrimaryMediaIndex >= vm.MediaItems.Count)
+            {
+                vm.PrimaryMediaIndex = 0;
+            }
+        }
+        private void ValidateProjectMediaRows(AdminProjectFormVM vm)
+        {
+            for (var index = 0; index < vm.MediaItems.Count; index++)
+            {
+                var media = vm.MediaItems[index];
+
+                if (media.MediaType == "IMAGE" && media.ImageFile == null)
+                {
+                    ModelState.AddModelError($"MediaItems[{index}].ImageFile", "Choose an image or remove this media row.");
+                }
+
+                if (media.MediaType == "VIDEO" && !TryBuildYouTubeEmbedUrl(media.YouTubeUrl, out _))
+                {
+                    ModelState.AddModelError($"MediaItems[{index}].YouTubeUrl", "Enter a valid YouTube URL.");
+                }
+            }
+        }
+        private async Task<List<ProjectMedia>> BuildProjectMediaItemsAsync(AdminProjectFormVM vm)
+        {
+            var mediaItems = new List<ProjectMedia>();
+
+            for (var index = 0; index < vm.MediaItems.Count; index++)
+            {
+                var media = vm.MediaItems[index];
+
+                if (media.MediaType == "IMAGE")
+                {
+                    var uploadResult = await _projectImageUploadService.SaveProjectImageAsync(media.ImageFile!);
+
+                    if (!uploadResult.Succeeded)
+                    {
+                        ModelState.AddModelError($"MediaItems[{index}].ImageFile", uploadResult.ErrorMessage);
+
+                        continue;
+                    }
+
+                    mediaItems.Add(new ProjectMedia
+                    {
+                        MediaType = "IMAGE",
+                        MediaURL = uploadResult.RequestPath,
+                        ThumbnailURL = uploadResult.RequestPath,
+                        AltText = media.AltText,
+                        SortOrder = index,
+                        IsPrimary = index == vm.PrimaryMediaIndex
+                    });
+                }
+                else if (TryBuildYouTubeEmbedUrl(media.YouTubeUrl, out var embedUrl))
+                {
+                    mediaItems.Add(new ProjectMedia
+                    {
+                        MediaType = "VIDEO",
+                        MediaURL = embedUrl,
+                        ThumbnailURL = "",
+                        AltText = media.AltText,
+                        SortOrder = index,
+                        IsPrimary = index == vm.PrimaryMediaIndex
+                    });
+                }
+            }
+
+            if (mediaItems.Count > 0 && !mediaItems.Any(media => media.IsPrimary))
+            {
+                mediaItems[0].IsPrimary = true;
+            }
+
+            return mediaItems;
+        }
+        private static bool TryBuildYouTubeEmbedUrl(string? url, out string embedUrl)
+        {
+            embedUrl = "";
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
+            {
+                return false;
+            }
+
+            var host = uri.Host.ToLowerInvariant();
+
+            string? videoId = null;
+
+            if (host == "youtu.be")
+            {
+                videoId = uri.AbsolutePath.Trim('/').Split('/').FirstOrDefault();
+            }
+            else if (host is "youtube.com" or "www.youtube.com" or "m.youtube.com")
+            {
+                if (uri.AbsolutePath.Equals("/watch", StringComparison.OrdinalIgnoreCase))
+                {
+                    var query = QueryHelpers.ParseQuery(uri.Query);
+
+                    if (query.TryGetValue("v", out var value))
+                    {
+                        videoId = value.FirstOrDefault();
+                    }
+                }
+                else
+                {
+                    var pathParts = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                    if (pathParts.Length >= 2 && pathParts[0] is "embed" or "shorts" or "live")
+                    {
+                        videoId = pathParts[1];
+                    }
+                }
+            }
+            else if (host is "youtube-nocookie.com" or "www.youtube-nocookie.com")
+            {
+                var pathParts = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (pathParts.Length >= 2 && pathParts[0] == "embed")
+                {
+                    videoId = pathParts[1];
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(videoId) || !Regex.IsMatch(videoId, "^[A-Za-z0-9_-]{11}$"))
+            {
+                return false;
+            }
+
+            embedUrl = $"https://www.youtube-nocookie.com/embed/{videoId}";
+            return true;
         }
     }
 }

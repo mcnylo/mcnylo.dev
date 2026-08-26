@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
-        public Project Project { get; set; } = new Project();
+        public Project Project { get; set; } = null!;
         public string MediaType { get; set; } = "";
         public string MediaURL { get; set; } = "";
         public string? ThumbnailURL { get; set; }

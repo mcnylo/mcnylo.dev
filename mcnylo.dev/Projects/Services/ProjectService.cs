@@ -1,4 +1,5 @@
-﻿using mcnylo.dev.Data.Context;
+﻿using mcnylo.dev.Admin.ViewModels.Projects;
+using mcnylo.dev.Data.Context;
 using mcnylo.dev.Data.Models;
 using mcnylo.dev.Projects.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -182,6 +183,191 @@ namespace mcnylo.dev.Projects.Services
             vm.MediaItems = projectMedia;
 
             return vm;
+        }
+        public async Task<AdminProjectListVM> GetAdminProjectResultsAsync(string? search, int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            var normalizedSearch = search?.Trim() ?? "";
+
+            var query = _dbContext.Projects.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(normalizedSearch))
+            {
+                query = query.Where(project => project.ProjectTitle.Contains(normalizedSearch) || project.ProjectSlug.Contains(normalizedSearch));
+            }
+
+            var totalProjects = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalProjects / (double)pageSize);
+
+            if (totalPages > 0 && pageNumber > totalPages)
+            {
+                pageNumber = totalPages;
+            }
+
+            var projects = await query
+                .OrderByDescending(project => project.UpdatedOn ?? project.CreatedOn)
+                .ThenByDescending(project => project.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(project => new AdminProjectListItemVM
+                {
+                    Id = project.Id,
+                    ProjectTitle = project.ProjectTitle,
+                    ProjectSlug = project.ProjectSlug,
+                    CategoryName = project.Category.CategoryName,
+                    IsFeatured = project.IsFeatured,
+                    CreatedOn = project.CreatedOn,
+                    UpdatedOn = project.UpdatedOn,
+                    TagCount = project.ProjectTags.Count,
+                    MediaCount = project.MediaItems.Count
+                })
+                .ToListAsync();
+
+            return new AdminProjectListVM
+            {
+                Search = normalizedSearch,
+                Projects = projects,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalProjects = totalProjects,
+                TotalPages = totalPages
+            };
+        }
+        public async Task<AdminProjectCategoryListVM> GetAdminProjectCategoryResultsAsync(int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            var query = _dbContext.ProjectCategories.AsNoTracking();
+
+            var totalCategories = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCategories / (double)pageSize);
+
+            if (totalPages > 0 && pageNumber > totalPages)
+            {
+                pageNumber = totalPages;
+            }
+
+            var categories = await query
+                .OrderBy(category => category.CategoryName)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(category => new AdminProjectCategoryListItemVM
+                {
+                    Id = category.Id,
+                    CategoryName = category.CategoryName,
+                    CategorySlug = category.CategorySlug,
+                    ProjectCount = category.Projects.Count
+                })
+                .ToListAsync();
+
+            return new AdminProjectCategoryListVM
+            {
+                Categories = categories,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCategories = totalCategories,
+                TotalPages = totalPages
+            };
+        }
+        public async Task<bool> ProjectCategorySlugExistsAsync(string slug, int? excludedCategoryId = null)
+        {
+            return await _dbContext.ProjectCategories.AsNoTracking()
+                .AnyAsync(category => category.CategorySlug == slug && (!excludedCategoryId.HasValue || category.Id != excludedCategoryId.Value));
+        }
+        public async Task<int> CreateProjectCategoryAsync(ProjectCategory category)
+        {
+            _dbContext.ProjectCategories.Add(category);
+
+            await _dbContext.SaveChangesAsync();
+
+            return category.Id;
+        }
+        public async Task<ProjectCategory?> GetProjectCategoryByIdAsync(int id)
+        {
+            return await _dbContext.ProjectCategories.FirstOrDefaultAsync(category => category.Id == id);
+        }
+        public async Task UpdateProjectCategoryAsync(ProjectCategory category)
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<ProjectCategory?> GetProjectCategoryDeleteDetailsAsync(int id)
+        {
+            return await _dbContext.ProjectCategories.AsNoTracking()
+                .Include(category => category.Projects)
+                .FirstOrDefaultAsync(category => category.Id == id);
+        }
+        public async Task DeleteProjectCategoryAsync(int id)
+        {
+            var category = await _dbContext.ProjectCategories
+                .Include(category => category.Projects)
+                .FirstOrDefaultAsync(category => category.Id == id);
+
+            if (category == null || category.Projects.Any())
+            {
+                return;
+            }
+
+            _dbContext.ProjectCategories.Remove(category);
+
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<List<ProjectCategory>> GetProjectCategoriesAsync()
+        {
+            return await _dbContext.ProjectCategories.AsNoTracking()
+                .OrderBy(category => category.CategoryName)
+                .ToListAsync();
+        }
+        public async Task<List<Tag>> GetAllTagsAsync()
+        {
+            return await _dbContext.Tags.AsNoTracking()
+                .OrderBy(tag => tag.TagName)
+                .ToListAsync();
+        }
+        public async Task<bool> ProjectSlugExistsAsync(string slug, int? excludedProjectId = null)
+        {
+            return await _dbContext.Projects.AsNoTracking()
+                .AnyAsync(project => project.ProjectSlug == slug && (!excludedProjectId.HasValue || project.Id != excludedProjectId.Value));
+        }
+        public async Task<int> CreateProjectAsync(Project project, List<int> tagIds, List<ProjectMedia> mediaItems)
+        {
+            var selectedTagIds = tagIds.Distinct().ToList();
+
+            var validTagIds = await _dbContext.Tags.AsNoTracking()
+                .Where(tag => selectedTagIds.Contains(tag.Id))
+                .Select(tag => tag.Id)
+                .ToListAsync();
+
+            project.ProjectTags = validTagIds
+                .Select(tagId => new ProjectTag
+                {
+                    TagId = tagId
+                })
+                .ToList();
+
+            project.MediaItems = mediaItems.OrderBy(media => media.SortOrder).ToList();
+
+            _dbContext.Projects.Add(project);
+
+            await _dbContext.SaveChangesAsync();
+
+            return project.Id;
         }
 
         // ========================================================================================

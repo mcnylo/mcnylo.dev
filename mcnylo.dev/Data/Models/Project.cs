@@ -8,12 +8,12 @@
         public string ShortDescription { get; set; } = "";
         public string? LongDescription { get; set; } = "";
         public int CategoryId { get; set; } = 0;
-        public ProjectCategory Category { get; set; } = new ProjectCategory();
+        public ProjectCategory Category { get; set; } = null!;
         public string? RepositoryURL { get; set; } = "";
         public bool IsFeatured { get; set; } = false;
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public DateTime? UpdatedOn {  get; set; } = null;
         public ICollection<ProjectTag> ProjectTags { get; set; } = [];
-        public List<ProjectMedia> MediaItems { get; set; } = new List<ProjectMedia>();
+        public List<ProjectMedia> MediaItems { get; set; } = [];
     }
 }

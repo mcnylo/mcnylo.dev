@@ -4,6 +4,7 @@ using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
 using mcnylo.dev.Media.Services;
 using mcnylo.dev.Media.Services.Articles;
+using mcnylo.dev.Media.Services.Projects;
 using mcnylo.dev.Projects.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -30,7 +31,7 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("HomeConnection");
+            var connectionString = builder.Configuration.GetConnectionString("WorkConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
@@ -40,6 +41,7 @@ namespace mcnylo.dev
             builder.Services.AddScoped<IArticleService, ArticleService>();
             builder.Services.AddSingleton<IMediaStorageService, MediaStorageService>();
             builder.Services.AddScoped<IArticleImageUploadService, ArticleImageUploadService>();
+            builder.Services.AddScoped<IProjectImageUploadService, ProjectImageUploadService>();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
