@@ -139,7 +139,7 @@
                     <input asp-for="PrimaryImageFile"
                            type="file"
                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                           class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 py-3 font-mono text-xs text-zinc-300 file:mr-3 file:border-0 file:bg-[#22ee29]/10 file:px-3 file:py-2 file:font-mono file:text-xs file:uppercase file:tracking-[0.14em] file:text-[#6ef967] hover:border-[#22ee29]/40" />
+                           class="admin-file-input mt-2" />
                     <span asp-validation-for="PrimaryImageFile" class="mt-2 block text-sm text-red-300"></span>
 
                     <label asp-for="PrimaryImagePath" class="mt-4 block font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
@@ -170,7 +170,7 @@
                     <input id="inline-image-file"
                            type="file"
                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                           class="mt-4 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 py-3 font-mono text-xs text-zinc-300 transition hover:border-[#22ee29]/40 file:mr-3 file:border file:border-[#22ee29]/30 file:bg-[#22ee29]/10 file:px-3 file:py-2 file:font-mono file:text-xs file:uppercase file:tracking-[0.14em] file:text-[#6ef967] file:transition hover:file:border-[#6ef967]/70 hover:file:bg-[#22ee29]/20 hover:file:shadow-[0_0_14px_rgba(34,238,41,0.18)]" />
+                           class="admin-file-input mt-4" />
 
                     <input id="inline-image-alt-text"
                            maxlength="250"
@@ -258,7 +258,7 @@
         formData.append("altText", altTextInput?.value ?? "");
 
         uploadButton.disabled = true;
-        uploadButton.textContent = "Uploading...";
+        uploadButton.textContent = "Wait...";
 
         try {
             const response = await fetch("/admin/articles/inline-image", {

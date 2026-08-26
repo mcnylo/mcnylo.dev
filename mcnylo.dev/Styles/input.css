@@ -31,9 +31,54 @@
    Global Scrollbar
    ========================================================= */
 
-html {
+html,
+body,
+* {
     scrollbar-width: auto;
     scrollbar-color: auto;
+}
+
+@supports selector(::-webkit-scrollbar) {
+    *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        background-color: rgba(8, 32, 12, 0.75);
+    }
+
+    *::-webkit-scrollbar-track {
+        background-color: rgba(8, 32, 12, 0.75);
+        border-radius: 0;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        min-height: 40px;
+        background-color: rgba(34, 238, 41, 0.75);
+        border: 0;
+        border-radius: 0 !important;
+    }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(34, 238, 41, 1);
+        }
+
+    *::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    *::-webkit-scrollbar-corner {
+        background-color: rgba(8, 32, 12, 0.75);
+    }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+    html,
+    body,
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(34, 238, 41, 0.75) rgba(8, 32, 12, 0.75);
+    }
 }
 
 :root {
@@ -45,43 +90,6 @@ html {
 body {
     font-family: var(--font-ui);
 }
-
-@supports selector(::-webkit-scrollbar) {
-    html::-webkit-scrollbar {
-        width: 10px;
-        background-color: rgba(8, 32, 12, 0.75);
-    }
-
-    html::-webkit-scrollbar-track {
-        background-color: rgba(8, 32, 12, 0.75);
-        border-radius: 0;
-    }
-
-    html::-webkit-scrollbar-thumb {
-        min-height: 40px;
-        background-color: rgba(34, 238, 41, 0.75);
-        border: 0;
-        border-radius: 0 !important;
-    }
-
-        html::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(34, 238, 41, 1);
-        }
-
-    html::-webkit-scrollbar-button {
-        display: none;
-        width: 0;
-        height: 0;
-    }
-}
-
-@supports not selector(::-webkit-scrollbar) {
-    html {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(34, 238, 41, 0.75) rgba(8, 32, 12, 0.75);
-    }
-}
-
 
 /* =========================================================
    Custom Utilities
@@ -1262,3 +1270,37 @@ body {
             background-color: #064e3b;
             color: #d1fae5;
         }
+
+.admin-file-input {
+    width: 100%;
+    border: 1px solid rgb(34 238 41 / 0.2);
+    background: rgb(9 9 11 / 0.7);
+    padding: 0.75rem;
+    font-family: var(--font-tech);
+    font-size: 0.75rem;
+    color: rgb(212 212 216);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+    .admin-file-input:hover {
+        border-color: rgb(34 238 41 / 0.4);
+    }
+
+    .admin-file-input::file-selector-button {
+        margin-right: 0.75rem;
+        border: 1px solid rgb(34 238 41 / 0.3);
+        background: rgb(34 238 41 / 0.1);
+        padding: 0.5rem 0.75rem;
+        font-family: var(--font-tech);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #6ef967;
+        transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .admin-file-input:hover::file-selector-button {
+        border-color: rgb(110 249 103 / 0.7);
+        background: rgb(34 238 41 / 0.2);
+        box-shadow: 0 0 14px rgb(34 238 41 / 0.18);
+    }
