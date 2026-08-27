@@ -369,6 +369,136 @@ namespace mcnylo.dev.Projects.Services
 
             return project.Id;
         }
+        public async Task<Project?> GetAdminProjectByIdAsync(int id)
+        {
+            return await _dbContext.Projects
+                .AsNoTracking()
+                .Include(project => project.Category)
+                .Include(project => project.ProjectTags)
+                    .ThenInclude(projectTag => projectTag.Tag)
+                .Include(project => project.MediaItems)
+                .FirstOrDefaultAsync(project => project.Id == id);
+        }
+        public async Task UpdateProjectAsync(Project project, List<int> tagIds, List<ProjectMedia> mediaItems)
+        {
+            var existingProject = await _dbContext.Projects
+                .Include(project => project.ProjectTags)
+                .Include(project => project.MediaItems)
+                .FirstOrDefaultAsync(existingProject => existingProject.Id == project.Id);
+
+            if (existingProject == null)
+            {
+                return;
+            }
+
+            existingProject.ProjectTitle = project.ProjectTitle;
+            existingProject.ProjectSlug = project.ProjectSlug;
+            existingProject.ShortDescription = project.ShortDescription;
+            existingProject.LongDescription = project.LongDescription;
+            existingProject.CategoryId = project.CategoryId;
+            existingProject.RepositoryURL = project.RepositoryURL;
+            existingProject.IsFeatured = project.IsFeatured;
+            existingProject.UpdatedOn = project.UpdatedOn;
+
+            var selectedTagIds = tagIds.Distinct().ToList();
+
+            var validTagIds = await _dbContext.Tags.AsNoTracking()
+                .Where(tag => selectedTagIds.Contains(tag.Id))
+                .Select(tag => tag.Id)
+                .ToListAsync();
+
+            var validTagIdSet = validTagIds.ToHashSet();
+            var existingTagIds = existingProject.ProjectTags.Select(projectTag => projectTag.TagId).ToHashSet();
+
+            var tagsToRemove = existingProject.ProjectTags
+                .Where(projectTag => !validTagIdSet.Contains(projectTag.TagId))
+                .ToList();
+
+            _dbContext.ProjectTags.RemoveRange(tagsToRemove);
+
+            foreach (var tagId in validTagIds.Where(tagId => !existingTagIds.Contains(tagId)))
+            {
+                _dbContext.ProjectTags.Add(new ProjectTag
+                {
+                    ProjectId = existingProject.Id,
+                    TagId = tagId
+                });
+            }
+
+            var submittedExistingMediaIds = mediaItems
+                .Where(media => media.Id > 0)
+                .Select(media => media.Id)
+                .ToHashSet();
+
+            var mediaToRemove = existingProject.MediaItems
+                .Where(media => !submittedExistingMediaIds.Contains(media.Id))
+                .ToList();
+
+            _dbContext.ProjectMedia.RemoveRange(mediaToRemove);
+
+            foreach (var media in mediaItems.OrderBy(media => media.SortOrder))
+            {
+                if (media.Id > 0)
+                {
+                    var existingMedia = existingProject.MediaItems.FirstOrDefault(projectMedia => projectMedia.Id == media.Id);
+
+                    if (existingMedia == null)
+                    {
+                        continue;
+                    }
+
+                    existingMedia.MediaType = media.MediaType;
+                    existingMedia.MediaURL = media.MediaURL;
+                    existingMedia.ThumbnailURL = media.ThumbnailURL;
+                    existingMedia.AltText = media.AltText;
+                    existingMedia.SortOrder = media.SortOrder;
+                    existingMedia.IsPrimary = media.IsPrimary;
+
+                    continue;
+                }
+
+                _dbContext.ProjectMedia.Add(new ProjectMedia
+                {
+                    ProjectId = existingProject.Id,
+                    MediaType = media.MediaType,
+                    MediaURL = media.MediaURL,
+                    ThumbnailURL = media.ThumbnailURL,
+                    AltText = media.AltText,
+                    SortOrder = media.SortOrder,
+                    IsPrimary = media.IsPrimary
+                });
+            }
+
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<Project?> GetProjectDeleteDetailsAsync(int id)
+        {
+            return await _dbContext.Projects
+                .AsNoTracking()
+                .Include(project => project.Category)
+                .Include(project => project.ProjectTags)
+                .Include(project => project.MediaItems)
+                .FirstOrDefaultAsync(project => project.Id == id);
+        }
+
+        public async Task DeleteProjectAsync(int id)
+        {
+            var project = await _dbContext.Projects
+                .Include(project => project.ProjectTags)
+                .Include(project => project.MediaItems)
+                .FirstOrDefaultAsync(project => project.Id == id);
+
+            if (project == null)
+            {
+                return;
+            }
+
+            _dbContext.ProjectTags.RemoveRange(project.ProjectTags);
+            _dbContext.ProjectMedia.RemoveRange(project.MediaItems);
+            _dbContext.Projects.Remove(project);
+
+            await _dbContext.SaveChangesAsync();
+        }
 
         // ========================================================================================
 

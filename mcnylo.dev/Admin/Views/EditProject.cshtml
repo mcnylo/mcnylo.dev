@@ -1,0 +1,375 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Projects.AdminProjectFormVM
+
+@{
+    ViewData["Title"] = "Edit Project";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl">
+        <header class="mb-10 flex flex-col gap-4 border-b border-[#22ee29]/15 pb-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Admin / Projects
+                </p>
+
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Edit Project
+                </h1>
+
+                <p class="mt-4 max-w-2xl text-base text-white/60">
+                    Update your project details, tags, and media.
+                </p>
+            </div>
+
+            <a href="/admin/projects"
+               class="inline-flex min-h-10 items-center justify-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                Cancel
+            </a>
+        </header>
+
+        <form method="post" action="/admin/projects/@Model.Id/edit" enctype="multipart/form-data" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
+            <div class="space-y-5">
+                <div>
+                    <label asp-for="ProjectTitle" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Title
+                    </label>
+                    <input asp-for="ProjectTitle"
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="ProjectTitle" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ProjectSlug" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Slug
+                    </label>
+                    <input asp-for="ProjectSlug"
+                           placeholder="my-project"
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="ProjectSlug" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ShortDescription" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Short Description
+                    </label>
+                    <textarea asp-for="ShortDescription"
+                              rows="3"
+                              class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 py-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30"></textarea>
+                    <span asp-validation-for="ShortDescription" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <label asp-for="LongDescription" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Long Description
+                    </label>
+                    <textarea asp-for="LongDescription"
+                              rows="12"
+                              class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 py-3 font-mono text-sm leading-6 text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30"></textarea>
+                    <span asp-validation-for="LongDescription" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div>
+                    <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                                Media
+                            </p>
+                            <p class="mt-1 text-sm text-zinc-500">
+                                Add images or YouTube links. One item should be primary.
+                            </p>
+                        </div>
+
+                        <button type="button"
+                                id="add-project-media-row"
+                                class="min-h-10 border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-4 font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                            Add Media
+                        </button>
+                    </div>
+
+                    <div id="project-media-rows" class="about-scrollbar max-h-[42rem] space-y-4 overflow-y-auto pr-2">
+                        @for (var index = 0; index < Model.MediaItems.Count; index++)
+                        {
+                            <div class="project-media-row border border-[#22ee29]/15 bg-black/25 p-4" data-media-row>
+                                <input type="hidden" name="MediaItems[@index].Id" value="@Model.MediaItems[index].Id" />
+                                <input type="hidden" name="MediaItems[@index].ExistingMediaURL" value="@Model.MediaItems[index].ExistingMediaURL" />
+                                <input type="hidden" name="MediaItems[@index].ExistingThumbnailURL" value="@Model.MediaItems[index].ExistingThumbnailURL" />
+
+                                <div class="mb-4 flex items-center justify-between gap-3">
+                                    <p class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500" data-media-row-label>
+                                        Media Item @(index + 1)
+                                    </p>
+
+                                    <button type="button"
+                                            class="remove-project-media-row font-mono text-xs uppercase tracking-[0.16em] text-red-300/80 transition hover:text-red-200">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(Model.MediaItems[index].ExistingMediaURL))
+                                {
+                                    <div class="project-existing-media-preview mb-4 border border-[#22ee29]/15 bg-zinc-950/50 p-3">
+                                        <p class="mb-2 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-zinc-500">
+                                            Existing Media
+                                        </p>
+
+                                        @if (Model.MediaItems[index].MediaType == "IMAGE")
+                                        {
+                                            <img src="@Model.MediaItems[index].ExistingMediaURL"
+                                                 alt="@Model.MediaItems[index].AltText"
+                                                 class="max-h-40 border border-[#22ee29]/10 object-cover" />
+                                        }
+                                        else
+                                        {
+                                            <a href="@Model.MediaItems[index].ExistingMediaURL"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="font-mono text-xs text-emerald-400/80 transition hover:text-[#6ef967]">
+                                                View YouTube embed
+                                            </a>
+                                        }
+                                    </div>
+                                }
+
+                                <div>
+                                    <div>
+                                        <label class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-400">
+                                            Type
+                                        </label>
+                                        <select name="MediaItems[@index].MediaType"
+                                                class="project-media-type mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30">
+                                            <option value="IMAGE" selected="@(Model.MediaItems[index].MediaType == "IMAGE")">Image</option>
+                                            <option value="VIDEO" selected="@(Model.MediaItems[index].MediaType == "VIDEO")">YouTube Video</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="project-media-image-fields mt-4">
+                                    <label class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-400">
+                                        Image File
+                                    </label>
+                                    <input name="MediaItems[@index].ImageFile"
+                                           type="file"
+                                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                           class="admin-file-input mt-2" />
+                                </div>
+
+                                <div class="project-media-video-fields mt-4 hidden">
+                                    <label class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-400">
+                                        YouTube URL
+                                    </label>
+                                    <input name="MediaItems[@index].YouTubeUrl"
+                                           value="@Model.MediaItems[index].YouTubeUrl"
+                                           placeholder="https://www.youtube.com/watch?v=..."
+                                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                                </div>
+
+                                <div class="mt-4">
+                                    <label class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-400">
+                                        Alt Text / Label
+                                    </label>
+                                    <input name="MediaItems[@index].AltText"
+                                           value="@Model.MediaItems[index].AltText"
+                                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                                </div>
+
+                                <label class="mt-4 flex cursor-pointer items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
+                                    <input type="radio"
+                                           name="PrimaryMediaIndex"
+                                           value="@index"
+                                           checked="@(Model.PrimaryMediaIndex == index)"
+                                           class="project-primary-media-radio radio radio-primary radio-xs rounded-none" />
+                                    <span>Primary media</span>
+                                </label>
+
+                                <span class="mt-2 block text-sm text-red-300" data-valmsg-for="MediaItems[@index].ImageFile"></span>
+                                <span class="mt-2 block text-sm text-red-300" data-valmsg-for="MediaItems[@index].YouTubeUrl"></span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <aside class="space-y-5">
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label asp-for="CategoryId" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Category
+                    </label>
+
+                    <select asp-for="CategoryId"
+                            class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30">
+                        <option value="0">Select category</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="CategoryId" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <p class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Tags
+                    </p>
+
+                    <div class="about-scrollbar mt-3 max-h-64 space-y-2 overflow-y-auto pr-1">
+                        @if (Model.AvailableTags.Count == 0)
+                        {
+                            <p class="font-mono text-xs uppercase tracking-[0.14em] text-zinc-500">
+                                No tags found.
+                            </p>
+                        }
+                        else
+                        {
+                            @foreach (var tag in Model.AvailableTags)
+                            {
+                                <label class="flex cursor-pointer items-center gap-3 border border-transparent px-2 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-zinc-400 transition hover:border-[#22ee29]/15 hover:bg-[#22ee29]/[0.04] hover:text-zinc-200">
+                                    <input type="checkbox"
+                                           name="SelectedTagIds"
+                                           value="@tag.Id"
+                                           checked="@Model.SelectedTagIds.Contains(tag.Id)"
+                                           class="checkbox checkbox-primary checkbox-xs rounded-none" />
+
+                                    <span>@tag.TagName</span>
+                                </label>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label asp-for="RepositoryURL" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Repository URL
+                    </label>
+                    <input asp-for="RepositoryURL"
+                           placeholder="https://github.com/..."
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="RepositoryURL" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label class="flex cursor-pointer items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
+                        <input asp-for="IsFeatured"
+                               class="checkbox checkbox-primary checkbox-xs rounded-none" />
+                        <span>Featured project</span>
+                    </label>
+                </div>
+
+                <button type="submit"
+                        class="min-h-11 w-full border border-[#22ee29]/30 bg-[#22ee29]/[0.06] px-5 font-mono text-xs uppercase tracking-[0.18em] text-[#6ef967] transition hover:border-[#6ef967]/60 hover:bg-[#22ee29]/[0.1]">
+                    Save Project
+                </button>
+            </aside>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const mediaRows = document.getElementById("project-media-rows");
+        const addMediaRowButton = document.getElementById("add-project-media-row");
+
+        function updateProjectMediaIndexes() {
+            const rows = mediaRows?.querySelectorAll("[data-media-row]") ?? [];
+
+            rows.forEach((row, index) => {
+                row.querySelectorAll("[name]").forEach((field) => {
+                    field.name = field.name.replace(/MediaItems\[\d+\]/, `MediaItems[${index}]`);
+                });
+
+                row.querySelectorAll("[data-valmsg-for]").forEach((field) => {
+                    field.dataset.valmsgFor = field.dataset.valmsgFor.replace(/MediaItems\[\d+\]/, `MediaItems[${index}]`);
+                });
+
+                const primaryRadio = row.querySelector("input[type='radio'][name='PrimaryMediaIndex']");
+
+                if (primaryRadio) {
+                    primaryRadio.value = index;
+                }
+
+                const label = row.querySelector("[data-media-row-label]");
+
+                if (label) {
+                    label.textContent = `Media Item ${index + 1}`;
+                }
+            });
+        }
+
+        function updateProjectMediaFieldVisibility(row) {
+            const mediaType = row.querySelector(".project-media-type")?.value;
+            const imageFields = row.querySelector(".project-media-image-fields");
+            const videoFields = row.querySelector(".project-media-video-fields");
+
+            imageFields?.classList.toggle("hidden", mediaType === "VIDEO");
+            videoFields?.classList.toggle("hidden", mediaType !== "VIDEO");
+        }
+
+        function ensurePrimaryProjectMediaSelected() {
+            const radios = document.querySelectorAll("input[type='radio'][name='PrimaryMediaIndex']");
+
+            if ([...radios].some((radio) => radio.checked)) {
+                return;
+            }
+
+            if (radios.length > 0) {
+                radios[0].checked = true;
+            }
+        }
+
+        function setupProjectMediaRow(row) {
+            row.querySelector(".project-media-type")?.addEventListener("change", () => {
+                updateProjectMediaFieldVisibility(row);
+            });
+
+            row.querySelector(".remove-project-media-row")?.addEventListener("click", () => {
+                row.remove();
+                updateProjectMediaIndexes();
+                ensurePrimaryProjectMediaSelected();
+            });
+
+            updateProjectMediaFieldVisibility(row);
+        }
+
+        addMediaRowButton?.addEventListener("click", () => {
+            const firstRow = mediaRows?.querySelector("[data-media-row]");
+
+            if (!firstRow || !mediaRows) {
+                return;
+            }
+
+            const newRow = firstRow.cloneNode(true);
+
+            newRow.querySelector(".project-existing-media-preview")?.remove();
+
+            newRow.querySelectorAll("input, textarea").forEach((field) => {
+                if (field.type === "checkbox" || field.type === "radio") {
+                    field.checked = false;
+                    return;
+                }
+
+                if (field.type === "file") {
+                    field.value = "";
+                    return;
+                }
+
+                field.value = "";
+            });
+
+            newRow.querySelectorAll("select").forEach((field) => {
+                field.value = "IMAGE";
+            });
+
+            mediaRows.appendChild(newRow);
+            updateProjectMediaIndexes();
+            ensurePrimaryProjectMediaSelected();
+            setupProjectMediaRow(newRow);
+        });
+
+        document.querySelectorAll("[data-media-row]").forEach(setupProjectMediaRow);
+        updateProjectMediaIndexes();
+        ensurePrimaryProjectMediaSelected();
+    </script>
+}

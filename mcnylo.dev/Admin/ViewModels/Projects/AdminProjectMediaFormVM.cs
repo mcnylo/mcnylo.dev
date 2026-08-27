@@ -2,9 +2,12 @@
 {
     public class AdminProjectMediaFormVM
     {
+        public int? Id { get; set; } = null;
         public string? MediaType { get; set; } = "IMAGE";
         public IFormFile? ImageFile { get; set; }
         public string? YouTubeUrl { get; set; } = "";
+        public string? ExistingMediaURL { get; set; } = "";
+        public string? ExistingThumbnailURL { get; set; } = "";
         public string? AltText { get; set; } = "";
         public int? SortOrder { get; set; } = 0;
         public int PrimaryMediaIndex { get; set; } = 0;

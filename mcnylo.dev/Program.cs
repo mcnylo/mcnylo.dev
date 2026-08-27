@@ -31,7 +31,7 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("WorkConnection");
+            var connectionString = builder.Configuration.GetConnectionString("HomeConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
@@ -129,11 +129,12 @@ namespace mcnylo.dev
                     "object-src 'none'; " +
                     "frame-ancestors 'none'; " +
                     "form-action 'self'; " +
-                    "img-src 'self' data: blob:; " +
-                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
-                    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+                    "img-src 'self' data: blob: https://img.youtube.com; " +
+                    "font-src 'self' data:; " +
+                    "style-src 'self' 'unsafe-inline'; " +
                     "script-src 'self' 'unsafe-inline'; " +
                     "connect-src 'self'; " +
+                    "frame-src 'self' https://www.youtube-nocookie.com; " +
                     "upgrade-insecure-requests");
 
 

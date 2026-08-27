@@ -150,15 +150,27 @@
 
                                 <td class="px-4 py-4 text-right">
                                     <div class="flex justify-end gap-4">
+
                                         <a href="/projects/@project.ProjectSlug"
                                            target="_blank"
                                            class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:text-[#6ef967]">
-                                            View
+                                            Public
                                         </a>
 
-                                        <span class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-600">
-                                            Actions soon
-                                        </span>
+                                        <a href="/admin/projects/@project.Id/preview"
+                                           class="font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:text-[#6ef967]">
+                                            Preview
+                                        </a>
+
+                                        <a href="/admin/projects/@project.Id/edit"
+                                           class="font-mono text-xs uppercase tracking-[0.16em] text-emerald-400/70 transition hover:text-[#6ef967]">
+                                            Edit
+                                        </a>
+
+                                        <a href="/admin/projects/@project.Id/delete"
+                                           class="font-mono text-xs uppercase tracking-[0.16em] text-red-300/80 transition hover:text-red-200">
+                                            Delete
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

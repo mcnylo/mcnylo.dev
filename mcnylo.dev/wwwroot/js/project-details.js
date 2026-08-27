@@ -1,166 +1,74 @@
 ﻿function initializeProjectMediaCarousel() {
-    const carousel = document.getElementById("project-media-carousel");
+    const display = document.getElementById("project-media-display");
+    const buttons = document.querySelectorAll("[data-project-media-button]");
 
-    if (!carousel) {
+    if (!display || buttons.length === 0) {
         return;
     }
 
-    const mediaDisplay = document.getElementById("project-media-display");
-    const mediaButtons = carousel.querySelectorAll("[data-project-media-button]");
-
-    if (!mediaDisplay || mediaButtons.length === 0) {
-        return;
-    }
-
-    mediaButtons.forEach((mediaButton) => {
-        mediaButton.addEventListener("click", () => {
-            setActiveProjectMedia(mediaButton, mediaDisplay, mediaButtons);
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            selectProjectMedia(display, buttons, button);
         });
     });
 
-    const primaryMediaButton = carousel.querySelector("[data-project-media-button][data-is-primary='true']");
-    const initialMediaButton = primaryMediaButton ?? mediaButtons[0];
+    const primaryButton = [...buttons].find((button) => button.dataset.isPrimary === "true") ?? buttons[0];
 
-    setActiveProjectMedia(initialMediaButton, mediaDisplay, mediaButtons);
+    selectProjectMedia(display, buttons, primaryButton);
 }
 
-function setActiveProjectMedia(mediaButton, mediaDisplay, mediaButtons) {
-    mediaButtons.forEach((button) => {
-        button.setAttribute("aria-selected", "false");
+function selectProjectMedia(display, buttons, selectedButton) {
+    buttons.forEach((button) => {
+        button.setAttribute("aria-selected", button === selectedButton ? "true" : "false");
     });
 
-    mediaButton.setAttribute("aria-selected", "true");
+    clearProjectMediaDisplay(display);
 
-    const mediaType = normalizeProjectMediaType(mediaButton.dataset.mediaType);
-    const mediaURL = mediaButton.dataset.mediaUrl ?? "";
-    const altText = mediaButton.dataset.altText ?? "";
+    const mediaType = selectedButton.dataset.mediaType;
+    const mediaUrl = selectedButton.dataset.mediaUrl ?? "";
+    const altText = selectedButton.dataset.altText ?? "Project media";
 
-    mediaDisplay.replaceChildren();
-
-    if (mediaType === "image") {
-        mediaDisplay.appendChild(createProjectImageElement(mediaURL, altText));
+    if (mediaType === "VIDEO") {
+        renderProjectVideo(display, mediaUrl, altText);
         return;
     }
 
-    if (isProjectVideoMedia(mediaType, mediaURL)) {
-        mediaDisplay.appendChild(createProjectVideoElement(mediaURL, altText));
-        return;
+    renderProjectImage(display, mediaUrl, altText);
+}
+
+function clearProjectMediaDisplay(display) {
+    while (display.firstChild) {
+        display.removeChild(display.firstChild);
     }
-
-    mediaDisplay.appendChild(createProjectMediaFallbackLink(mediaURL));
 }
 
-function normalizeProjectMediaType(mediaType) {
-    return (mediaType ?? "").trim().toLowerCase();
-}
-
-function isProjectVideoMedia(mediaType, mediaURL) {
-    return mediaType === "video"
-        || mediaType.includes("youtube")
-        || getYouTubeVideoId(mediaURL) !== "";
-}
-
-function createProjectImageElement(mediaURL, altText) {
+function renderProjectImage(display, mediaUrl, altText) {
     const image = document.createElement("img");
 
-    image.src = mediaURL;
+    image.src = mediaUrl;
     image.alt = altText;
     image.className = "aspect-video w-full object-cover";
 
-    return image;
+    display.appendChild(image);
 }
 
-function createProjectVideoElement(mediaURL, altText) {
-    const youtubeEmbedURL = getYouTubeEmbedURL(mediaURL);
+function renderProjectVideo(display, mediaUrl, title) {
+    const wrapper = document.createElement("div");
 
-    if (youtubeEmbedURL) {
-        return createProjectYouTubeElement(youtubeEmbedURL, altText);
-    }
+    wrapper.className = "aspect-video w-full";
 
-    return createProjectMediaFallbackLink(mediaURL);
-}
-
-function createProjectYouTubeElement(embedURL, altText) {
     const iframe = document.createElement("iframe");
 
-    iframe.src = embedURL;
-    iframe.title = altText || "Project video";
-    iframe.className = "aspect-video w-full";
+    iframe.src = mediaUrl;
+    iframe.title = title || "Project video";
+    iframe.loading = "lazy";
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
-    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.className = "h-full w-full";
 
-    return iframe;
-}
-
-function createProjectMediaFallbackLink(mediaURL) {
-    const link = document.createElement("a");
-
-    link.href = mediaURL;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.className = "flex aspect-video w-full items-center justify-center text-white/70";
-    link.textContent = "Open media";
-
-    return link;
-}
-
-function getYouTubeEmbedURL(mediaURL) {
-    const videoId = getYouTubeVideoId(mediaURL);
-
-    if (!videoId) {
-        return "";
-    }
-
-    return `https://www.youtube-nocookie.com/embed/${videoId}`;
-}
-
-function getYouTubeVideoId(mediaURL) {
-    try {
-        const url = new URL(mediaURL);
-        const hostname = url.hostname.toLowerCase();
-
-        if (hostname.includes("youtu.be")) {
-            return url.pathname.split("/").filter(Boolean)[0] ?? "";
-        }
-
-        const isYouTubeHost =
-            hostname.includes("youtube.com") ||
-            hostname.includes("youtube-nocookie.com");
-
-        if (!isYouTubeHost) {
-            return "";
-        }
-
-        const watchVideoId = url.searchParams.get("v");
-
-        if (watchVideoId) {
-            return watchVideoId;
-        }
-
-        const pathParts = url.pathname.split("/").filter(Boolean);
-
-        const embedIndex = pathParts.indexOf("embed");
-        const shortsIndex = pathParts.indexOf("shorts");
-        const liveIndex = pathParts.indexOf("live");
-
-        if (embedIndex >= 0 && pathParts[embedIndex + 1]) {
-            return pathParts[embedIndex + 1];
-        }
-
-        if (shortsIndex >= 0 && pathParts[shortsIndex + 1]) {
-            return pathParts[shortsIndex + 1];
-        }
-
-        if (liveIndex >= 0 && pathParts[liveIndex + 1]) {
-            return pathParts[liveIndex + 1];
-        }
-
-        return "";
-    }
-    catch {
-        return "";
-    }
+    wrapper.appendChild(iframe);
+    display.appendChild(wrapper);
 }
 
 initializeProjectMediaCarousel();

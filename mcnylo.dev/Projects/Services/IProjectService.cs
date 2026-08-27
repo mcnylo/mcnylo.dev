@@ -21,5 +21,9 @@ namespace mcnylo.dev.Projects.Services
         public Task<List<Tag>> GetAllTagsAsync();
         public Task<bool> ProjectSlugExistsAsync(string slug, int? excludedProjectId = null);
         public Task<int> CreateProjectAsync(Project project, List<int> tagIds, List<ProjectMedia> mediaItems);
+        public Task<Project?> GetAdminProjectByIdAsync(int id);
+        public Task UpdateProjectAsync(Project project, List<int> tagIds, List<ProjectMedia> mediaItems);
+        public Task<Project?> GetProjectDeleteDetailsAsync(int id);
+        public Task DeleteProjectAsync(int id);
     }
 }

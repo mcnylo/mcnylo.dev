@@ -934,14 +934,14 @@ namespace mcnylo.dev.Admin.Controllers
             }
 
             NormalizeProjectMediaRows(vm);
-            ValidateProjectMediaRows(vm);
+            ValidateProjectMediaRows(vm, allowExistingMedia: false);
 
             if (!ModelState.IsValid)
             {
                 return View(await PopulateProjectFormOptionsAsync(vm));
             }
 
-            var mediaItems = await BuildProjectMediaItemsAsync(vm);
+            var mediaItems = await BuildProjectMediaItemsAsync(vm, allowExistingMedia: false);
 
             if (!ModelState.IsValid)
             {
@@ -963,6 +963,199 @@ namespace mcnylo.dev.Admin.Controllers
             };
 
             await _projectService.CreateProjectAsync(project, vm.SelectedTagIds, mediaItems);
+
+            return RedirectToAction(nameof(Projects));
+        }
+
+        [Authorize]
+        [HttpGet("/admin/projects/{id:int}/preview")]
+        public async Task<IActionResult> PreviewProject(int id)
+        {
+            var project = await _projectService.GetAdminProjectByIdAsync(id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminProjectPreviewVM
+            {
+                Id = project.Id,
+                ProjectTitle = project.ProjectTitle,
+                ProjectSlug = project.ProjectSlug,
+                ProjectDescription = project.LongDescription ?? "",
+                ProjectCategory = project.Category.CategoryName,
+                RepositoryURL = project.RepositoryURL,
+                IsFeatured = project.IsFeatured,
+                Tags = project.ProjectTags
+                    .Where(projectTag => projectTag.Tag != null)
+                    .OrderBy(projectTag => projectTag.Tag.TagName)
+                    .Select(projectTag => projectTag.Tag.TagName)
+                    .ToList(),
+                MediaItems = project.MediaItems
+                    .OrderBy(media => media.SortOrder)
+                    .Select(media => new AdminProjectMediaPreviewVM
+                    {
+                        MediaType = media.MediaType,
+                        MediaURL = media.MediaURL,
+                        ThumbnailURL = media.ThumbnailURL,
+                        AltText = media.AltText ?? "",
+                        SortOrder = media.SortOrder,
+                        IsPrimary = media.IsPrimary
+                    })
+                    .ToList()
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/projects/{id:int}/edit")]
+        public async Task<IActionResult> EditProject(int id)
+        {
+            var project = await _projectService.GetAdminProjectByIdAsync(id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var orderedMedia = project.MediaItems.OrderBy(media => media.SortOrder).ToList();
+
+            var primaryMediaIndex = orderedMedia.FindIndex(media => media.IsPrimary);
+
+            if (primaryMediaIndex < 0)
+            {
+                primaryMediaIndex = 0;
+            }
+
+            var vm = new AdminProjectFormVM
+            {
+                Id = project.Id,
+                ProjectTitle = project.ProjectTitle,
+                ProjectSlug = project.ProjectSlug,
+                ShortDescription = project.ShortDescription,
+                LongDescription = project.LongDescription ?? "",
+                CategoryId = project.CategoryId,
+                RepositoryURL = project.RepositoryURL ?? "",
+                IsFeatured = project.IsFeatured,
+                SelectedTagIds = project.ProjectTags.Select(projectTag => projectTag.TagId).ToList(),
+                PrimaryMediaIndex = primaryMediaIndex,
+                MediaItems = orderedMedia
+                    .Select((media, index) => new AdminProjectMediaFormVM
+                    {
+                        Id = media.Id,
+                        MediaType = media.MediaType,
+                        YouTubeUrl = media.MediaType == "VIDEO" ? media.MediaURL : "",
+                        ExistingMediaURL = media.MediaURL,
+                        ExistingThumbnailURL = media.ThumbnailURL ?? "",
+                        AltText = media.AltText ?? "",
+                        SortOrder = index,
+                        PrimaryMediaIndex = index
+                    })
+                    .ToList()
+            };
+
+            return View(await PopulateProjectFormOptionsAsync(vm));
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/projects/{id:int}/edit")]
+        public async Task<IActionResult> EditProject(int id, AdminProjectFormVM vm)
+        {
+            if (id != vm.Id)
+            {
+                return BadRequest();
+            }
+
+            if (await _projectService.GetAdminProjectByIdAsync(id) == null)
+            {
+                return NotFound();
+            }
+
+            vm.ProjectTitle = vm.ProjectTitle?.Trim() ?? "";
+            vm.ProjectSlug = vm.ProjectSlug?.Trim().ToLowerInvariant() ?? "";
+            vm.ShortDescription = vm.ShortDescription?.Trim() ?? "";
+            vm.LongDescription = vm.LongDescription?.Trim() ?? "";
+            vm.RepositoryURL = vm.RepositoryURL?.Trim() ?? "";
+
+            if (await _projectService.ProjectSlugExistsAsync(vm.ProjectSlug, id))
+            {
+                ModelState.AddModelError(nameof(vm.ProjectSlug), "A project with this slug already exists.");
+            }
+
+            var categoryIds = (await _projectService.GetProjectCategoriesAsync()).Select(category => category.Id).ToHashSet();
+
+            if (!categoryIds.Contains(vm.CategoryId))
+            {
+                ModelState.AddModelError(nameof(vm.CategoryId), "Select a valid category.");
+            }
+
+            NormalizeProjectMediaRows(vm);
+            ValidateProjectMediaRows(vm, allowExistingMedia: true);
+
+            if (!ModelState.IsValid)
+            {
+                return View(await PopulateProjectFormOptionsAsync(vm));
+            }
+
+            var mediaItems = await BuildProjectMediaItemsAsync(vm, allowExistingMedia: true);
+
+            if (!ModelState.IsValid)
+            {
+                return View(await PopulateProjectFormOptionsAsync(vm));
+            }
+
+            await _projectService.UpdateProjectAsync(new Project
+            {
+                Id = id,
+                ProjectTitle = vm.ProjectTitle,
+                ProjectSlug = vm.ProjectSlug,
+                ShortDescription = vm.ShortDescription,
+                LongDescription = vm.LongDescription,
+                CategoryId = vm.CategoryId,
+                RepositoryURL = vm.RepositoryURL,
+                IsFeatured = vm.IsFeatured,
+                UpdatedOn = DateTime.UtcNow
+            }, vm.SelectedTagIds, mediaItems);
+
+            return RedirectToAction(nameof(Projects));
+        }
+
+        [Authorize]
+        [HttpGet("/admin/projects/{id:int}/delete")]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            var project = await _projectService.GetProjectDeleteDetailsAsync(id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminProjectDeleteVM
+            {
+                Id = project.Id,
+                ProjectTitle = project.ProjectTitle,
+                ProjectSlug = project.ProjectSlug,
+                CategoryName = project.Category.CategoryName,
+                IsFeatured = project.IsFeatured,
+                CreatedOn = project.CreatedOn,
+                UpdatedOn = project.UpdatedOn,
+                TagCount = project.ProjectTags.Count,
+                MediaCount = project.MediaItems.Count
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/projects/{id:int}/delete")]
+        public async Task<IActionResult> DeleteProjectConfirmed(int id)
+        {
+            await _projectService.DeleteProjectAsync(id);
 
             return RedirectToAction(nameof(Projects));
         }
@@ -1048,13 +1241,13 @@ namespace mcnylo.dev.Admin.Controllers
                 vm.PrimaryMediaIndex = 0;
             }
         }
-        private void ValidateProjectMediaRows(AdminProjectFormVM vm)
+        private void ValidateProjectMediaRows(AdminProjectFormVM vm, bool allowExistingMedia)
         {
             for (var index = 0; index < vm.MediaItems.Count; index++)
             {
                 var media = vm.MediaItems[index];
 
-                if (media.MediaType == "IMAGE" && media.ImageFile == null)
+                if (media.MediaType == "IMAGE" && media.ImageFile == null && (!allowExistingMedia || string.IsNullOrWhiteSpace(media.ExistingMediaURL)))
                 {
                     ModelState.AddModelError($"MediaItems[{index}].ImageFile", "Choose an image or remove this media row.");
                 }
@@ -1065,7 +1258,7 @@ namespace mcnylo.dev.Admin.Controllers
                 }
             }
         }
-        private async Task<List<ProjectMedia>> BuildProjectMediaItemsAsync(AdminProjectFormVM vm)
+        private async Task<List<ProjectMedia>> BuildProjectMediaItemsAsync(AdminProjectFormVM vm, bool allowExistingMedia)
         {
             var mediaItems = new List<ProjectMedia>();
 
@@ -1075,6 +1268,22 @@ namespace mcnylo.dev.Admin.Controllers
 
                 if (media.MediaType == "IMAGE")
                 {
+                    if (allowExistingMedia && media.ImageFile == null && !string.IsNullOrWhiteSpace(media.ExistingMediaURL))
+                    {
+                        mediaItems.Add(new ProjectMedia
+                        {
+                            Id = media.Id ?? 0,
+                            MediaType = "IMAGE",
+                            MediaURL = media.ExistingMediaURL,
+                            ThumbnailURL = string.IsNullOrWhiteSpace(media.ExistingThumbnailURL) ? media.ExistingMediaURL : media.ExistingThumbnailURL,
+                            AltText = media.AltText,
+                            SortOrder = index,
+                            IsPrimary = index == vm.PrimaryMediaIndex
+                        });
+
+                        continue;
+                    }
+
                     var uploadResult = await _projectImageUploadService.SaveProjectImageAsync(media.ImageFile!);
 
                     if (!uploadResult.Succeeded)
@@ -1100,7 +1309,7 @@ namespace mcnylo.dev.Admin.Controllers
                     {
                         MediaType = "VIDEO",
                         MediaURL = embedUrl,
-                        ThumbnailURL = "",
+                        ThumbnailURL = BuildYouTubeThumbnailUrl(embedUrl),
                         AltText = media.AltText,
                         SortOrder = index,
                         IsPrimary = index == vm.PrimaryMediaIndex
@@ -1170,6 +1379,21 @@ namespace mcnylo.dev.Admin.Controllers
 
             embedUrl = $"https://www.youtube-nocookie.com/embed/{videoId}";
             return true;
+        }
+        private static string BuildYouTubeThumbnailUrl(string embedUrl)
+        {
+            var videoId = embedUrl
+                .Split("/embed/", StringSplitOptions.RemoveEmptyEntries)
+                .LastOrDefault()?
+                .Split("?", StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(videoId))
+            {
+                return "";
+            }
+
+            return $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
         }
     }
 }
