@@ -31,7 +31,7 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("HomeConnection");
+            var connectionString = builder.Configuration.GetConnectionString("WorkConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();

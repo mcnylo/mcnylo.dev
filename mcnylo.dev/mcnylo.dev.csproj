@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="About\ViewModels\**" />
-    <Content Remove="About\ViewModels\**" />
-    <EmbeddedResource Remove="About\ViewModels\**" />
-    <None Remove="About\ViewModels\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Styles\input.css" />
   </ItemGroup>
 

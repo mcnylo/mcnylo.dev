@@ -1,4 +1,6 @@
-﻿using mcnylo.dev.Admin.ViewModels;
+﻿using mcnylo.dev.About.Services;
+using mcnylo.dev.Admin.ViewModels;
+using mcnylo.dev.Admin.ViewModels.About;
 using mcnylo.dev.Admin.ViewModels.Articles;
 using mcnylo.dev.Admin.ViewModels.Projects;
 using mcnylo.dev.Admin.ViewModels.Tags;
@@ -28,6 +30,7 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IArticleMarkdownService _markdownService;
         private readonly IProjectService _projectService;
         private readonly IProjectImageUploadService _projectImageUploadService;
+        private readonly IAboutService _aboutService;
 
         // ========================================================================================
 
@@ -36,7 +39,8 @@ namespace mcnylo.dev.Admin.Controllers
             IArticleImageUploadService articleImageUploadService,
             IArticleMarkdownService markdownService,
             IProjectService projectService,
-            IProjectImageUploadService projectImageUploadService)
+            IProjectImageUploadService projectImageUploadService,
+            IAboutService aboutService)
         {
             _configuration = configuration;
             _articleService = articleService;
@@ -44,6 +48,7 @@ namespace mcnylo.dev.Admin.Controllers
             _markdownService = markdownService;
             _projectService = projectService;
             _projectImageUploadService = projectImageUploadService;
+            _aboutService = aboutService;
         }
 
         // ========================================================================================
@@ -1158,6 +1163,83 @@ namespace mcnylo.dev.Admin.Controllers
             await _projectService.DeleteProjectAsync(id);
 
             return RedirectToAction(nameof(Projects));
+        }
+
+        // ABOUT ==================================================================================
+
+        [Authorize]
+        [HttpGet("/admin/about")]
+        public async Task<IActionResult> About()
+        {
+            var aboutPage = await _aboutService.GetAboutPageAsync();
+
+            if (aboutPage == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminAboutFormVM
+            {
+                Id = aboutPage.Id,
+                DisplayName = aboutPage.DisplayName,
+                ProfileSummary = aboutPage.ProfileSummary,
+                IntroductionHeading = aboutPage.IntroductionHeading,
+                IntroductionMarkdown = aboutPage.IntroductionMarkdown,
+                ExperienceHeading = aboutPage.ExperienceHeading,
+                ExperienceMarkdown = aboutPage.ExperienceMarkdown,
+                EducationHeading = aboutPage.EducationHeading,
+                EducationMarkdown = aboutPage.EducationMarkdown,
+                InterestsHeading = aboutPage.InterestsHeading,
+                InterestsMarkdown = aboutPage.InterestsMarkdown
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/about")]
+        public async Task<IActionResult> About(AdminAboutFormVM vm)
+        {
+            vm.DisplayName = vm.DisplayName?.Trim() ?? "";
+            vm.ProfileSummary = vm.ProfileSummary?.Trim() ?? "";
+            vm.IntroductionHeading = vm.IntroductionHeading?.Trim() ?? "";
+            vm.IntroductionMarkdown = vm.IntroductionMarkdown?.Trim() ?? "";
+            vm.ExperienceHeading = vm.ExperienceHeading?.Trim() ?? "";
+            vm.ExperienceMarkdown = vm.ExperienceMarkdown?.Trim() ?? "";
+            vm.EducationHeading = vm.EducationHeading?.Trim() ?? "";
+            vm.EducationMarkdown = vm.EducationMarkdown?.Trim() ?? "";
+            vm.InterestsHeading = vm.InterestsHeading?.Trim() ?? "";
+            vm.InterestsMarkdown = vm.InterestsMarkdown?.Trim() ?? "";
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            var aboutPage = new AboutPage
+            {
+                Id = vm.Id,
+                DisplayName = vm.DisplayName,
+                ProfileSummary = vm.ProfileSummary,
+                IntroductionHeading = vm.IntroductionHeading,
+                IntroductionMarkdown = vm.IntroductionMarkdown,
+                ExperienceHeading = vm.ExperienceHeading,
+                ExperienceMarkdown = vm.ExperienceMarkdown,
+                EducationHeading = vm.EducationHeading,
+                EducationMarkdown = vm.EducationMarkdown,
+                InterestsHeading = vm.InterestsHeading,
+                InterestsMarkdown = vm.InterestsMarkdown
+            };
+
+            if (!await _aboutService.UpdateAboutPageAsync(aboutPage))
+            {
+                return NotFound();
+            }
+
+            TempData["SuccessMessage"] = "About page updated.";
+
+            return RedirectToAction("About");
         }
 
         // ========================================================================================

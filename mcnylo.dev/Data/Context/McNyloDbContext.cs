@@ -13,10 +13,15 @@ namespace mcnylo.dev.Data.Context
         public DbSet<Article> Articles => Set<Article>();
         public DbSet<ArticleCategory> ArticleCategories => Set<ArticleCategory>();
         public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
+        public DbSet<AboutPage> AboutPages => Set<AboutPage>();
+
+        // ========================================================================================
 
         public McNyloDbContext(DbContextOptions<McNyloDbContext> options) : base(options)
         {
         }
+
+        // ========================================================================================
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +35,7 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<Article>().ToTable("article");
             modelBuilder.Entity<ArticleCategory>().ToTable("articlecategory");
             modelBuilder.Entity<ArticleTag>().ToTable("articletag");
+            modelBuilder.Entity<AboutPage>().ToTable("aboutpage");
 
             modelBuilder.Entity<ProjectTag>().HasKey(x => new
             {
@@ -119,6 +125,46 @@ namespace mcnylo.dev.Data.Context
                 .HasOne(articleTag => articleTag.Tag)
                 .WithMany()
                 .HasForeignKey(articleTag => articleTag.TagId);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.DisplayName)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.ProfileSummary)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.IntroductionHeading)
+                .HasMaxLength(200);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.IntroductionMarkdown)
+                .HasColumnType("longtext");
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.ExperienceHeading)
+                .HasMaxLength(200);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.ExperienceMarkdown)
+                .HasColumnType("longtext");
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.EducationHeading)
+                .HasMaxLength(200);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.EducationMarkdown)
+                .HasColumnType("longtext");
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.InterestsHeading)
+                .HasMaxLength(200);
+
+            modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.InterestsMarkdown)
+                .HasColumnType("longtext");
         }
     }
 }

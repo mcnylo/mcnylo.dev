@@ -1,9 +1,11 @@
-﻿@{
+﻿@model mcnylo.dev.About.ViewModels.AboutPageVM
+
+@{
     ViewData["Title"] = "About Me";
     ViewData["UseFixedViewport"] = true;
 }
 
-<section class="tech-surface bg-base-200 lg:h-full lg:overflow-hidden">
+<section class="tech-surface scroll-smooth bg-base-200 lg:h-full lg:overflow-hidden">
     <div class="relative isolate mx-auto grid max-w-[1600px] lg:h-full lg:grid-cols-[minmax(18rem,34%)_minmax(0,1fr)]">
 
         <!-- Left navigation panel -->
@@ -31,30 +33,21 @@
                         </p>
 
                         <h1 class="mt-4 text-4xl font-bold text-white">
-                            Michael McNiel
+                            @Model.DisplayName
                         </h1>
 
                         <p class="mt-4 max-w-md leading-7 text-white/60">
-                            Software developer, technology enthusiast, and lifelong learner.
+                            @Model.ProfileSummary
                         </p>
                     </div>
 
                     <nav class="mt-8 flex flex-col gap-3">
-                        <a href="#introduction" class="about-nav-link" data-index="01">
-                            Introduction
-                        </a>
-
-                        <a href="#experience" class="about-nav-link" data-index="02">
-                            Experience
-                        </a>
-
-                        <a href="#education" class="about-nav-link" data-index="03">
-                            Education
-                        </a>
-
-                        <a href="#interests" class="about-nav-link" data-index="04">
-                            Interests
-                        </a>
+                        @foreach (var aboutSection in Model.Sections)
+                        {
+                            <a href="#@aboutSection.AnchorId" class="about-nav-link" data-index="@aboutSection.NavigationIndex">
+                                @aboutSection.NavigationLabel
+                            </a>
+                        }
                     </nav>
 
                 </div>
@@ -64,86 +57,71 @@
         </aside>
 
         <!-- Right content panel -->
-        <div class="about-scrollbar about-content-panel relative z-20 px-6 py-12 sm:px-10 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:px-16 lg:py-20">
+        <div id="about-content-panel" class="about-scrollbar about-content-panel relative z-20 px-6 py-12 sm:px-10 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:px-16 lg:py-20">
 
-            <section id="introduction"
-                     class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
+            @foreach (var aboutSection in Model.Sections)
+            {
+                <section id="@aboutSection.AnchorId"
+                         class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center @(aboutSection.HasDividerAfter ? "border-b border-white/10" : "") py-16">
 
-                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
-                    // Introduction
-                </p>
+                    <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
+                        // @aboutSection.NavigationLabel
+                    </p>
 
-                <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
-                    A little bit about me
-                </h2>
+                    <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
+                        @aboutSection.Heading
+                    </h2>
 
-                <p class="mt-6 max-w-3xl text-lg leading-8 text-white/65">
-                    This is temporary introduction content. We will replace it
-                    with the final About page content after the layout is working.
-                </p>
+                    <div class="about-markdown mt-6 max-w-3xl text-lg leading-8 text-white/65 [&_a]:text-[#6ef967] [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:border-l [&_blockquote]:border-[#22ee29]/30 [&_blockquote]:pl-4 [&_code]:text-[#6ef967] [&_li]:mt-2 [&_p+p]:mt-4 [&_strong]:text-zinc-100 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6">
+                        @Html.Raw(aboutSection.HtmlContent)
+                    </div>
 
-            </section>
+                </section>
 
-            <div class="tech-divider" aria-hidden="true"></div>
-
-            <section id="experience" class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
-
-                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
-                    // Experience
-                </p>
-
-                <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
-                    Professional experience
-                </h2>
-
-                <p class="mt-6 max-w-3xl text-lg leading-8 text-white/65">
-                    This section will eventually contain information about your
-                    professional development experience and the systems you have built.
-                </p>
-
-            </section>
-
-            <div class="tech-divider" aria-hidden="true"></div>
-
-            <section id="education"
-                     class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center border-b border-white/10 py-16">
-
-                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
-                    // Education
-                </p>
-
-                <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
-                    Education and learning
-                </h2>
-
-                <p class="mt-6 max-w-3xl text-lg leading-8 text-white/65">
-                    This section will contain your formal education, certifications,
-                    and the subjects you are currently studying.
-                </p>
-
-            </section>
-
-            <div class="tech-divider" aria-hidden="true"></div>
-
-            <section id="interests"
-                     class="flex min-h-[70vh] scroll-mt-8 flex-col justify-center py-16">
-
-                <p class="font-tech text-neon-green text-sm font-semibold uppercase tracking-[0.35em]">
-                    // Interests
-                </p>
-
-                <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
-                    Beyond software development
-                </h2>
-
-                <p class="mt-6 max-w-3xl text-lg leading-8 text-white/65">
-                    This section will eventually describe your interests in hardware,
-                    game consoles, home labs, low-level programming, and related topics.
-                </p>
-
-            </section>
+                @if (aboutSection.HasDividerAfter)
+                {
+                    <div class="tech-divider" aria-hidden="true"></div>
+                }
+            }
 
         </div>
 
     </div>
 </section>
+
+<script>
+    const aboutContentPanel = document.getElementById("about-content-panel");
+
+    document.querySelectorAll(".about-nav-link").forEach(link => {
+        link.addEventListener("click", event => {
+            const targetId = link.getAttribute("href");
+
+            if (!targetId || !targetId.startsWith("#")) {
+                return;
+            }
+
+            const target = document.querySelector(targetId);
+
+            if (!target) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (aboutContentPanel && window.matchMedia("(min-width: 1024px)").matches) {
+                aboutContentPanel.scrollTo({
+                    top: target.offsetTop,
+                    behavior: "smooth"
+                });
+            }
+            else {
+                window.scrollTo({
+                    top: target.getBoundingClientRect().top + window.scrollY,
+                    behavior: "smooth"
+                });
+            }
+
+            history.replaceState(null, "", targetId);
+        });
+    });
+</script>
