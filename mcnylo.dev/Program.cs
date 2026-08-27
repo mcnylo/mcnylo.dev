@@ -6,6 +6,7 @@ using mcnylo.dev.Home.Services;
 using mcnylo.dev.Media.Services;
 using mcnylo.dev.Media.Services.Articles;
 using mcnylo.dev.Media.Services.Projects;
+using mcnylo.dev.Media.Services.Resume;
 using mcnylo.dev.Projects.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -32,6 +33,12 @@ namespace mcnylo.dev
                     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
                 });
 
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+                options.LowercaseQueryStrings = false;
+            });
+
             var connectionString = builder.Configuration.GetConnectionString("WorkConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
@@ -44,6 +51,7 @@ namespace mcnylo.dev
             builder.Services.AddScoped<IArticleImageUploadService, ArticleImageUploadService>();
             builder.Services.AddScoped<IProjectImageUploadService, ProjectImageUploadService>();
             builder.Services.AddScoped<IMediaAdminService, MediaAdminService>();
+            builder.Services.AddScoped<IResumePdfUploadService, ResumePdfUploadService>();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -132,8 +140,8 @@ namespace mcnylo.dev
                     "frame-ancestors 'none'; " +
                     "form-action 'self'; " +
                     "img-src 'self' data: blob: https://img.youtube.com; " +
-                    "font-src 'self' data:; " +
-                    "style-src 'self' 'unsafe-inline'; " +
+                    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
                     "script-src 'self' 'unsafe-inline'; " +
                     "connect-src 'self'; " +
                     "frame-src 'self' https://www.youtube-nocookie.com; " +

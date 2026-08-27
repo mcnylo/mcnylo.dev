@@ -9,6 +9,7 @@ using mcnylo.dev.Articles.Services;
 using mcnylo.dev.Data.Models;
 using mcnylo.dev.Media.Services.Articles;
 using mcnylo.dev.Media.Services.Projects;
+using mcnylo.dev.Media.Services.Resume;
 using mcnylo.dev.Projects.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -33,6 +34,7 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IProjectImageUploadService _projectImageUploadService;
         private readonly IAboutService _aboutService;
         private readonly IMediaAdminService _mediaAdminService;
+        private readonly IResumePdfUploadService _resumePdfUploadService;
 
         // ========================================================================================
 
@@ -43,7 +45,8 @@ namespace mcnylo.dev.Admin.Controllers
             IProjectService projectService,
             IProjectImageUploadService projectImageUploadService,
             IAboutService aboutService,
-            IMediaAdminService mediaAdminService)
+            IMediaAdminService mediaAdminService,
+            IResumePdfUploadService resumePdfUploadService)
         {
             _configuration = configuration;
             _articleService = articleService;
@@ -53,6 +56,7 @@ namespace mcnylo.dev.Admin.Controllers
             _projectImageUploadService = projectImageUploadService;
             _aboutService = aboutService;
             _mediaAdminService = mediaAdminService;
+            _resumePdfUploadService = resumePdfUploadService;
         }
 
         // ========================================================================================
@@ -526,7 +530,7 @@ namespace mcnylo.dev.Admin.Controllers
         {
             await _articleService.DeleteArticleCategoryAsync(id);
 
-            return RedirectToAction(nameof(ArticleCategories));
+            return RedirectToAction("ArticleCategories");
         }
 
         // PROJECTS ===============================================================================
@@ -680,8 +684,6 @@ namespace mcnylo.dev.Admin.Controllers
         [HttpPost("/admin/project-categories/{id:int}/delete")]
         public async Task<IActionResult> DeleteProjectCategoryConfirmed(int id, AdminProjectCategoryDeleteVM vm)
         {
-            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/project-categories";
-
             var category = await _projectService.GetProjectCategoryDeleteDetailsAsync(id);
 
             if (category == null)
@@ -703,7 +705,7 @@ namespace mcnylo.dev.Admin.Controllers
 
             await _projectService.DeleteProjectCategoryAsync(id);
 
-            return Redirect(vm.ReturnUrl);
+            return RedirectToAction("ProjectCategories");
         }
 
         // TAGS ===================================================================================
@@ -850,13 +852,11 @@ namespace mcnylo.dev.Admin.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [HttpPost("/admin/tags/{id:int}/delete")]
-        public async Task<IActionResult> DeleteTagConfirmed(int id, AdminTagDeleteVM vm)
+        public async Task<IActionResult> DeleteTagConfirmed(int id)
         {
-            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/tags";
-
             await _articleService.DeleteTagAsync(id);
 
-            return Redirect(vm.ReturnUrl);
+            return RedirectToAction("Tags");
         }
 
         [Authorize]
@@ -1166,7 +1166,7 @@ namespace mcnylo.dev.Admin.Controllers
         {
             await _projectService.DeleteProjectAsync(id);
 
-            return RedirectToAction(nameof(Projects));
+            return RedirectToAction("Projects");
         }
 
         // ABOUT ==================================================================================
@@ -1187,6 +1187,7 @@ namespace mcnylo.dev.Admin.Controllers
                 Id = aboutPage.Id,
                 DisplayName = aboutPage.DisplayName,
                 ProfileSummary = aboutPage.ProfileSummary,
+                ResumePdfUrl = aboutPage.ResumePdfUrl ?? "",
                 IntroductionHeading = aboutPage.IntroductionHeading,
                 IntroductionMarkdown = aboutPage.IntroductionMarkdown,
                 ExperienceHeading = aboutPage.ExperienceHeading,
@@ -1207,6 +1208,7 @@ namespace mcnylo.dev.Admin.Controllers
         {
             vm.DisplayName = vm.DisplayName?.Trim() ?? "";
             vm.ProfileSummary = vm.ProfileSummary?.Trim() ?? "";
+            vm.ResumePdfUrl = vm.ResumePdfUrl?.Trim() ?? "";
             vm.IntroductionHeading = vm.IntroductionHeading?.Trim() ?? "";
             vm.IntroductionMarkdown = vm.IntroductionMarkdown?.Trim() ?? "";
             vm.ExperienceHeading = vm.ExperienceHeading?.Trim() ?? "";
@@ -1215,6 +1217,20 @@ namespace mcnylo.dev.Admin.Controllers
             vm.EducationMarkdown = vm.EducationMarkdown?.Trim() ?? "";
             vm.InterestsHeading = vm.InterestsHeading?.Trim() ?? "";
             vm.InterestsMarkdown = vm.InterestsMarkdown?.Trim() ?? "";
+
+            if (vm.ResumePdfFile != null && vm.ResumePdfFile.Length > 0)
+            {
+                var uploadResult = await _resumePdfUploadService.SaveResumePdfAsync(vm.ResumePdfFile);
+
+                if (!uploadResult.Succeeded)
+                {
+                    ModelState.AddModelError(nameof(vm.ResumePdfFile), uploadResult.ErrorMessage);
+
+                    return View(vm);
+                }
+
+                vm.ResumePdfUrl = uploadResult.RequestPath;
+            }
 
             if (!ModelState.IsValid)
             {
@@ -1226,6 +1242,7 @@ namespace mcnylo.dev.Admin.Controllers
                 Id = vm.Id,
                 DisplayName = vm.DisplayName,
                 ProfileSummary = vm.ProfileSummary,
+                ResumePdfUrl = vm.ResumePdfUrl,
                 IntroductionHeading = vm.IntroductionHeading,
                 IntroductionMarkdown = vm.IntroductionMarkdown,
                 ExperienceHeading = vm.ExperienceHeading,
@@ -1329,6 +1346,7 @@ namespace mcnylo.dev.Admin.Controllers
                     Id = category.Id,
                     CategoryName = category.CategoryName
                 })
+                .OrderBy(x => x.CategoryName)
                 .ToList();
 
             vm.AvailableTags = (await _articleService.GetAllTagsAsync())
@@ -1337,6 +1355,7 @@ namespace mcnylo.dev.Admin.Controllers
                     Id = tag.Id,
                     TagName = tag.TagName
                 })
+                .OrderBy(x => x.TagName)
                 .ToList();
 
             return vm;
@@ -1349,6 +1368,7 @@ namespace mcnylo.dev.Admin.Controllers
                     Id = category.Id,
                     CategoryName = category.CategoryName
                 })
+                .OrderBy(x => x.CategoryName)
                 .ToList();
 
             vm.AvailableTags = (await _projectService.GetAllTagsAsync())
@@ -1357,6 +1377,7 @@ namespace mcnylo.dev.Admin.Controllers
                     Id = tag.Id,
                     TagName = tag.TagName
                 })
+                .OrderBy(x => x.TagName)
                 .ToList();
 
             if (vm.MediaItems.Count == 0)

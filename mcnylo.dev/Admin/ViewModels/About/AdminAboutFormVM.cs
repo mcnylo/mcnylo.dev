@@ -12,6 +12,11 @@ namespace mcnylo.dev.Admin.ViewModels.About
         [Required, StringLength(500)]
         public string ProfileSummary { get; set; } = "";
 
+        [StringLength(500)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string ResumePdfUrl { get; set; } = "";
+        public IFormFile? ResumePdfFile { get; set; } = null;
+
         [Required, StringLength(200)]
         public string IntroductionHeading { get; set; } = "";
 

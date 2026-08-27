@@ -66,7 +66,6 @@
                 {
                     <form method="post" action="/admin/project-categories/@Model.Id/delete">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" asp-for="ReturnUrl" />
 
                         <button type="submit"
                                 class="min-h-11 border border-red-400/40 bg-red-500/10 px-5 font-mono text-xs uppercase tracking-[0.18em] text-red-200 transition hover:border-red-300 hover:bg-red-500/15">
@@ -75,7 +74,7 @@
                     </form>
                 }
 
-                <a href="@Model.ReturnUrl"
+                <a href="/admin/project-categories"
                    class="inline-flex min-h-11 items-center justify-center border border-zinc-700/80 px-5 font-mono text-xs uppercase tracking-[0.18em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
                     Cancel
                 </a>

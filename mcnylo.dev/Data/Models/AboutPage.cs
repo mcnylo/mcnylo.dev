@@ -5,6 +5,7 @@
         public int Id { get; set; } = 0;
         public string DisplayName { get; set; } = "";
         public string ProfileSummary { get; set; } = "";
+        public string? ResumePdfUrl { get; set; } = null;
         public string IntroductionHeading { get; set; } = "";
         public string IntroductionMarkdown { get; set; } = "";
         public string ExperienceHeading { get; set; } = "";

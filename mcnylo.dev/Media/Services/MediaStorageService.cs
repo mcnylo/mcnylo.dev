@@ -6,6 +6,7 @@
         public string RequestPath { get; }
         public string ArticleMediaRootPath { get; }
         public string ProjectMediaRootPath { get; }
+        public string ResumeMediaRootPath { get; }
 
         public MediaStorageService(IConfiguration configuration)
         {
@@ -28,10 +29,12 @@
             RequestPath = requestPath.TrimEnd('/');
             ArticleMediaRootPath = Path.Combine(RootPath, "articles");
             ProjectMediaRootPath = Path.Combine(RootPath, "projects");
+            ResumeMediaRootPath = Path.Combine(RootPath, "resume");
 
             Directory.CreateDirectory(RootPath);
             Directory.CreateDirectory(ArticleMediaRootPath);
             Directory.CreateDirectory(ProjectMediaRootPath);
+            Directory.CreateDirectory(ResumeMediaRootPath);
         }
 
         public string BuildArticleRequestPath(string fileName)
@@ -42,6 +45,11 @@
         public string BuildProjectRequestPath(string fileName)
         {
             return $"{RequestPath}/projects/{fileName}";
+        }
+
+        public string BuildResumeRequestPath(string fileName)
+        {
+            return $"{RequestPath}/resume/{fileName}";
         }
     }
 }

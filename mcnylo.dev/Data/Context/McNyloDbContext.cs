@@ -135,6 +135,10 @@ namespace mcnylo.dev.Data.Context
                 .HasMaxLength(500);
 
             modelBuilder.Entity<AboutPage>()
+                .Property(aboutPage => aboutPage.ResumePdfUrl)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<AboutPage>()
                 .Property(aboutPage => aboutPage.IntroductionHeading)
                 .HasMaxLength(200);
 

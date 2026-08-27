@@ -17,6 +17,7 @@ namespace mcnylo.dev.Projects.Controllers
 
         // ========================================================================================
 
+        [HttpGet("projects")]
         public async Task<IActionResult> Index()
         {
             var vm = await _projectService.BuildProjectIndexVM(new ProjectFilterVM());

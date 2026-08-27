@@ -36,6 +36,7 @@ namespace mcnylo.dev.About.Services
 
             existingAboutPage.DisplayName = aboutPage.DisplayName;
             existingAboutPage.ProfileSummary = aboutPage.ProfileSummary;
+            existingAboutPage.ResumePdfUrl = aboutPage.ResumePdfUrl;
             existingAboutPage.IntroductionHeading = aboutPage.IntroductionHeading;
             existingAboutPage.IntroductionMarkdown = aboutPage.IntroductionMarkdown;
             existingAboutPage.ExperienceHeading = aboutPage.ExperienceHeading;
@@ -63,6 +64,7 @@ namespace mcnylo.dev.About.Services
             {
                 DisplayName = aboutPage.DisplayName,
                 ProfileSummary = aboutPage.ProfileSummary,
+                ResumePdfUrl = aboutPage.ResumePdfUrl,
                 Sections =
                 [
                     BuildSection("introduction", "Introduction", "01", aboutPage.IntroductionHeading, aboutPage.IntroductionMarkdown, true),

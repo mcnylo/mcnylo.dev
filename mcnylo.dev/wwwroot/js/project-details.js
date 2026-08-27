@@ -1,6 +1,8 @@
 ﻿function initializeProjectMediaCarousel() {
     const display = document.getElementById("project-media-display");
-    const buttons = document.querySelectorAll("[data-project-media-button]");
+    const buttons = [...document.querySelectorAll("[data-project-media-button]")];
+    const previousButton = document.querySelector("[data-project-media-previous]");
+    const nextButton = document.querySelector("[data-project-media-next]");
 
     if (!display || buttons.length === 0) {
         return;
@@ -8,13 +10,63 @@
 
     buttons.forEach((button) => {
         button.addEventListener("click", () => {
+            hasManualSelection = true;
+            stopProjectMediaAutoRotate(autoRotateTimer);
+
             selectProjectMedia(display, buttons, button);
         });
     });
 
-    const primaryButton = [...buttons].find((button) => button.dataset.isPrimary === "true") ?? buttons[0];
+    previousButton?.addEventListener("click", () => {
+        hasManualSelection = true;
+        stopProjectMediaAutoRotate(autoRotateTimer);
+
+        selectProjectMediaByOffset(display, buttons, -1);
+    });
+
+    nextButton?.addEventListener("click", () => {
+        hasManualSelection = true;
+        stopProjectMediaAutoRotate(autoRotateTimer);
+
+        selectProjectMediaByOffset(display, buttons, 1);
+    });
+
+    let autoRotateTimer = null;
+    let hasManualSelection = false;
+
+    const primaryButton = buttons.find((button) => button.dataset.isPrimary === "true") ?? buttons[0];
 
     selectProjectMedia(display, buttons, primaryButton);
+
+    if (buttons.length > 1) {
+        autoRotateTimer = startProjectMediaAutoRotate(display, buttons, () => hasManualSelection);
+    }
+}
+
+function startProjectMediaAutoRotate(display, buttons, hasManualSelection) {
+    return window.setInterval(() => {
+        if (hasManualSelection()) {
+            return;
+        }
+
+        selectProjectMediaByOffset(display, buttons, 1);
+    }, 5000);
+}
+
+function stopProjectMediaAutoRotate(autoRotateTimer) {
+    if (autoRotateTimer == null) {
+        return;
+    }
+
+    window.clearInterval(autoRotateTimer);
+}
+
+function selectProjectMediaByOffset(display, buttons, offset) {
+    const selectedIndex = buttons.findIndex((button) => button.getAttribute("aria-selected") === "true");
+    const currentIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    const nextIndex = (currentIndex + offset + buttons.length) % buttons.length;
+
+    selectProjectMedia(display, buttons, buttons[nextIndex]);
 }
 
 function selectProjectMedia(display, buttons, selectedButton) {
@@ -22,18 +74,24 @@ function selectProjectMedia(display, buttons, selectedButton) {
         button.setAttribute("aria-selected", button === selectedButton ? "true" : "false");
     });
 
-    clearProjectMediaDisplay(display);
+    display.classList.add("opacity-0");
 
-    const mediaType = selectedButton.dataset.mediaType;
-    const mediaUrl = selectedButton.dataset.mediaUrl ?? "";
-    const altText = selectedButton.dataset.altText ?? "Project media";
+    window.setTimeout(() => {
+        clearProjectMediaDisplay(display);
 
-    if (mediaType === "VIDEO") {
-        renderProjectVideo(display, mediaUrl, altText);
-        return;
-    }
+        const mediaType = selectedButton.dataset.mediaType;
+        const mediaUrl = selectedButton.dataset.mediaUrl ?? "";
+        const altText = selectedButton.dataset.altText ?? "Project media";
 
-    renderProjectImage(display, mediaUrl, altText);
+        if (mediaType === "VIDEO") {
+            renderProjectVideo(display, mediaUrl, altText);
+        }
+        else {
+            renderProjectImage(display, mediaUrl, altText);
+        }
+
+        display.classList.remove("opacity-0");
+    }, 180);
 }
 
 function clearProjectMediaDisplay(display) {

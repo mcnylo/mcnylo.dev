@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Banner Hero Video -->
+<!-- Banner Hero -->
 <section class="tech-hero relative flex min-h-[50vh] w-full items-center overflow-hidden">
     <div class="tech-hero-backdrop" aria-hidden="true"></div>
     <div class="tech-hero-grid" aria-hidden="true"></div>
@@ -254,7 +254,12 @@
                             </div>
 
                             <div class="card-actions mt-auto justify-end pt-6">
-                                <a class="btn btn-sm btn-primary">View Project</a>
+                                <a asp-controller="Projects"
+                                   asp-action="Details"
+                                   asp-route-slug="@project.ProjectSlug"
+                                   class="btn btn-sm btn-primary">
+                                    View Project
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -35,10 +35,11 @@
             </div>
         }
 
-        <form method="post" action="/admin/about">
+        <form method="post" action="/admin/about" enctype="multipart/form-data" class="space-y-6">
             @Html.AntiForgeryToken()
 
             <input type="hidden" asp-for="Id" />
+            <input asp-for="ResumePdfUrl" type="hidden" />
 
             <div class="space-y-5">
                 <div>
@@ -58,6 +59,35 @@
                               rows="3"
                               class="mt-2 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 py-3 font-mono text-sm text-zinc-100 outline-none transition focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30"></textarea>
                     <span asp-validation-for="ProfileSummary" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="space-y-2">
+                    <label asp-for="ResumePdfFile" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Resume PDF
+                    </label>
+
+                    <input asp-for="ResumePdfFile"
+                           type="file"
+                           accept="application/pdf,.pdf"
+                           class="file-input file-input-bordered w-full bg-black/40 text-white border-green-900/70" />
+
+                    <span asp-validation-for="ResumePdfFile" class="text-sm text-red-400"></span>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.ResumePdfUrl))
+                    {
+                        <div class="text-sm">
+                            <a href="@Model.ResumePdfUrl"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-green-300 hover:text-green-200 underline underline-offset-4">
+                                View current resume PDF
+                            </a>
+                        </div>
+                    }
+
+                    <p class="text-xs text-gray-400">
+                        Upload a new PDF only when you want to replace the current resume.
+                    </p>
                 </div>
 
                 <div class="border border-[#22ee29]/15 bg-black/25 p-5">

@@ -39,6 +39,7 @@ namespace mcnylo.dev.Home.Services
                 p.ProjectName = project.ProjectTitle;
                 p.ProjectShortDescription = project.ShortDescription;
                 p.ProjectCategory = project.Category.CategoryName;
+                p.ProjectSlug = project.ProjectSlug;
                 p.YearCreated = project.CreatedOn.Year;
                 p.ProjectTags = project.ProjectTags.ToList();
 
