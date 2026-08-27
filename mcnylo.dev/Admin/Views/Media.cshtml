@@ -1,0 +1,221 @@
+﻿@model mcnylo.dev.Admin.ViewModels.Media.AdminMediaListVM
+
+@{
+    ViewData["Title"] = "Admin Media";
+}
+
+<section class="archive-surface min-h-[calc(100svh-8rem)] bg-base-200 px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+
+        <a href="/admin" class="text-sm font-mono uppercase tracking-[0.2em] text-emerald-400/70 hover:text-[#6ef967]">
+            ← Back
+        </a>
+
+        <header class="mb-10 flex flex-col gap-4 border-b border-[#22ee29]/15 py-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-tech text-sm font-semibold uppercase tracking-[0.35em] text-neon-green">
+                    // Admin / Media
+                </p>
+
+                <h1 class="mt-3 text-4xl font-bold text-white sm:text-5xl">
+                    Media Control
+                </h1>
+
+                <p class="mt-4 max-w-2xl text-base text-white/60">
+                    Review uploaded media and see where each file is currently referenced.
+                </p>
+            </div>
+        </header>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+        {
+            <div class="mb-6 border border-[#22ee29]/25 bg-[#22ee29]/[0.06] px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-[#6ef967]">
+                @Model.SuccessMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="mb-6 border border-red-400/25 bg-red-400/[0.06] px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-red-300">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        @if (Model.TotalMediaItems == 0)
+        {
+            <div class="border border-[#22ee29]/15 bg-black/25 p-8 text-center">
+                <p class="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
+                    No media files found.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-hidden border border-[#22ee29]/15 bg-black/25">
+                <div class="about-scrollbar overflow-x-auto">
+                    <table class="min-w-full divide-y divide-[#22ee29]/10">
+                        <thead class="bg-[#22ee29]/[0.03]">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    Preview
+                                </th>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    File
+                                </th>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    Area
+                                </th>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    References
+                                </th>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    Size
+                                </th>
+                                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    Modified
+                                </th>
+                                <th class="px-4 py-3 text-right font-mono text-xs uppercase tracking-[0.16em] text-[#6ef967]/65">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-[#22ee29]/10">
+                            @foreach (var mediaItem in Model.MediaItems)
+                            {
+                                <tr class="transition hover:bg-[#22ee29]/[0.03]">
+                                    <td class="px-4 py-4">
+                                        <img src="@mediaItem.RequestPath"
+                                             alt="@mediaItem.FileName"
+                                             class="h-16 w-24 border border-[#22ee29]/15 object-cover opacity-85" />
+                                    </td>
+
+                                    <td class="px-4 py-4">
+                                        <p class="font-mono text-sm text-zinc-100">
+                                            @mediaItem.FileName
+                                        </p>
+                                        <p class="mt-1 break-all font-mono text-xs text-zinc-500">
+                                            @mediaItem.RequestPath
+                                        </p>
+                                    </td>
+
+                                    <td class="px-4 py-4 font-mono text-xs uppercase tracking-[0.14em] text-zinc-400">
+                                        @mediaItem.MediaArea
+                                    </td>
+
+                                    <td class="px-4 py-4">
+                                        @if (mediaItem.ArticleReferenceCount == 0 && mediaItem.ProjectReferenceCount == 0)
+                                        {
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="border border-red-400/25 text-red-300/80 px-2 py-1 font-mono text-xs uppercase tracking-[0.12em]">
+                                                    Articles: @mediaItem.ArticleReferenceCount
+                                                </span>
+
+                                                <span class="border border-red-400/25 text-red-300/80 px-2 py-1 font-mono text-xs uppercase tracking-[0.12em]">
+                                                    Projects: @mediaItem.ProjectReferenceCount
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="border border-[#22ee29]/20 bg-[#22ee29]/[0.05] px-2 py-1 font-mono text-xs uppercase tracking-[0.12em] text-[#6ef967]">
+                                                    Articles: @mediaItem.ArticleReferenceCount
+                                                </span>
+
+                                                <span class="border border-[#22ee29]/20 bg-[#22ee29]/[0.05] px-2 py-1 font-mono text-xs uppercase tracking-[0.12em] text-[#6ef967]">
+                                                    Projects: @mediaItem.ProjectReferenceCount
+                                                </span>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td class="px-4 py-4 font-mono text-xs text-zinc-400">
+                                        @FormatFileSize(mediaItem.FileSizeInBytes)
+                                    </td>
+
+                                    <td class="px-4 py-4 font-mono text-xs text-zinc-400">
+                                        @mediaItem.LastModifiedOn.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                                    </td>
+
+                                    <td class="px-4 py-4 text-right">
+                                        @if (mediaItem.ArticleReferenceCount == 0 && mediaItem.ProjectReferenceCount == 0)
+                                        {
+                                            <a href="@BuildDeleteMediaUrl(mediaItem.RelativePath)"
+                                               class="inline-flex min-h-9 items-center border border-red-400/25 px-3 font-mono text-xs uppercase tracking-[0.14em] text-red-300/80 transition hover:border-red-300/50 hover:text-red-200">
+                                                Delete
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-10 flex flex-col gap-3 border-t border-[#22ee29]/15 pt-6 sm:flex-row sm:items-center sm:justify-between"
+                 aria-label="Admin media pagination">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500">
+                    Page @Model.PageNumber of @Model.TotalPages
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                    @if (Model.PageNumber > 1)
+                    {
+                        <a href="@BuildAdminMediaPageUrl(Model.PageNumber - 1)"
+                           class="inline-flex min-h-10 items-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                            Prev
+                        </a>
+                    }
+
+                    @for (var pageIndex = 1; pageIndex <= Model.TotalPages; pageIndex++)
+                    {
+                        <a href="@BuildAdminMediaPageUrl(pageIndex)"
+                           class="inline-flex min-h-10 min-w-10 items-center justify-center border px-3 font-mono text-xs uppercase tracking-[0.16em] transition @(pageIndex == Model.PageNumber ? "border-[#22ee29]/60 bg-[#22ee29]/[0.08] text-[#6ef967]" : "border-zinc-700/80 text-zinc-400 hover:border-[#22ee29]/35 hover:text-zinc-200")">
+                            @pageIndex
+                        </a>
+                    }
+
+                    @if (Model.PageNumber < Model.TotalPages)
+                    {
+                        <a href="@BuildAdminMediaPageUrl(Model.PageNumber + 1)"
+                           class="inline-flex min-h-10 items-center border border-zinc-700/80 px-4 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400 transition hover:border-[#22ee29]/35 hover:text-zinc-200">
+                            Next
+                        </a>
+                    }
+                </div>
+            </nav>
+        }
+    </div>
+</section>
+
+@functions {
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes >= 1024 * 1024)
+        {
+            return $"{bytes / 1024d / 1024d:0.##} MB";
+        }
+
+        if (bytes >= 1024)
+        {
+            return $"{bytes / 1024d:0.##} KB";
+        }
+
+        return $"{bytes} B";
+    }
+
+    private string BuildAdminMediaPageUrl(int pageNumber)
+    {
+        return $"/admin/media?pageNumber={pageNumber}&pageSize={Model.PageSize}";
+    }
+
+    private string BuildDeleteMediaUrl(string relativePath)
+    {
+        return $"/admin/media/delete?relativePath={Uri.EscapeDataString(relativePath)}&pageNumber={Model.PageNumber}&pageSize={Model.PageSize}";
+    }
+}

@@ -1,4 +1,5 @@
 using mcnylo.dev.About.Services;
+using mcnylo.dev.Admin.Services;
 using mcnylo.dev.Articles.Services;
 using mcnylo.dev.Data.Context;
 using mcnylo.dev.Home.Services;
@@ -42,6 +43,7 @@ namespace mcnylo.dev
             builder.Services.AddSingleton<IMediaStorageService, MediaStorageService>();
             builder.Services.AddScoped<IArticleImageUploadService, ArticleImageUploadService>();
             builder.Services.AddScoped<IProjectImageUploadService, ProjectImageUploadService>();
+            builder.Services.AddScoped<IMediaAdminService, MediaAdminService>();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {

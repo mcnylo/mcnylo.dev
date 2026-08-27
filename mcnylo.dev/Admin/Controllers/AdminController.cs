@@ -1,4 +1,5 @@
 ﻿using mcnylo.dev.About.Services;
+using mcnylo.dev.Admin.Services;
 using mcnylo.dev.Admin.ViewModels;
 using mcnylo.dev.Admin.ViewModels.About;
 using mcnylo.dev.Admin.ViewModels.Articles;
@@ -31,6 +32,7 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IProjectService _projectService;
         private readonly IProjectImageUploadService _projectImageUploadService;
         private readonly IAboutService _aboutService;
+        private readonly IMediaAdminService _mediaAdminService;
 
         // ========================================================================================
 
@@ -40,7 +42,8 @@ namespace mcnylo.dev.Admin.Controllers
             IArticleMarkdownService markdownService,
             IProjectService projectService,
             IProjectImageUploadService projectImageUploadService,
-            IAboutService aboutService)
+            IAboutService aboutService,
+            IMediaAdminService mediaAdminService)
         {
             _configuration = configuration;
             _articleService = articleService;
@@ -49,6 +52,7 @@ namespace mcnylo.dev.Admin.Controllers
             _projectService = projectService;
             _projectImageUploadService = projectImageUploadService;
             _aboutService = aboutService;
+            _mediaAdminService = mediaAdminService;
         }
 
         // ========================================================================================
@@ -1240,6 +1244,72 @@ namespace mcnylo.dev.Admin.Controllers
             TempData["SuccessMessage"] = "About page updated.";
 
             return RedirectToAction("About");
+        }
+
+        // MEDIA ==================================================================================
+
+        [Authorize]
+        [HttpGet("/admin/media")]
+        public async Task<IActionResult> Media(int pageNumber = 1, int pageSize = 10)
+        {
+            var vm = await _mediaAdminService.GetAdminMediaListAsync(pageNumber, pageSize);
+
+            vm.SuccessMessage = TempData["SuccessMessage"] as string;
+            vm.ErrorMessage = TempData["ErrorMessage"] as string;
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/media/delete")]
+        public async Task<IActionResult> DeleteMedia(string relativePath, int pageNumber = 1, int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return BadRequest();
+            }
+
+            var vm = await _mediaAdminService.GetAdminMediaDeleteDetailsAsync(relativePath);
+
+            if (vm == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["PageNumber"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/media/delete")]
+        public async Task<IActionResult> DeleteMediaConfirmed(string relativePath, int pageNumber = 1, int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return BadRequest();
+            }
+
+            if (!await _mediaAdminService.DeleteMediaAsync(relativePath))
+            {
+                TempData["ErrorMessage"] = "Media file could not be deleted. It may still be referenced or may no longer exist.";
+
+                return RedirectToAction(nameof(Media), new
+                {
+                    pageNumber,
+                    pageSize
+                });
+            }
+
+            TempData["SuccessMessage"] = "Media file deleted.";
+
+            return RedirectToAction(nameof(Media), new
+            {
+                pageNumber,
+                pageSize
+            });
         }
 
         // ========================================================================================
