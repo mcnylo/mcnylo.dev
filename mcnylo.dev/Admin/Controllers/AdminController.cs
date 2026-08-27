@@ -3,6 +3,7 @@ using mcnylo.dev.Admin.Services;
 using mcnylo.dev.Admin.ViewModels;
 using mcnylo.dev.Admin.ViewModels.About;
 using mcnylo.dev.Admin.ViewModels.Articles;
+using mcnylo.dev.Admin.ViewModels.MFA;
 using mcnylo.dev.Admin.ViewModels.Projects;
 using mcnylo.dev.Admin.ViewModels.Tags;
 using mcnylo.dev.Articles.Services;
@@ -35,6 +36,7 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IAboutService _aboutService;
         private readonly IMediaAdminService _mediaAdminService;
         private readonly IResumePdfUploadService _resumePdfUploadService;
+        private readonly IAdminMfaService _adminMfaService;
 
         // ========================================================================================
 
@@ -46,7 +48,8 @@ namespace mcnylo.dev.Admin.Controllers
             IProjectImageUploadService projectImageUploadService,
             IAboutService aboutService,
             IMediaAdminService mediaAdminService,
-            IResumePdfUploadService resumePdfUploadService)
+            IResumePdfUploadService resumePdfUploadService,
+            IAdminMfaService adminMfaService)
         {
             _configuration = configuration;
             _articleService = articleService;
@@ -57,10 +60,11 @@ namespace mcnylo.dev.Admin.Controllers
             _aboutService = aboutService;
             _mediaAdminService = mediaAdminService;
             _resumePdfUploadService = resumePdfUploadService;
+            _adminMfaService = adminMfaService;
         }
 
         // ========================================================================================
-        // ARTICLES ===============================================================================
+        // LOGIN/MFA ==============================================================================
 
         [Authorize]
         [HttpGet("/admin")]
@@ -134,6 +138,64 @@ namespace mcnylo.dev.Admin.Controllers
 
             return RedirectToAction("Login");
         }
+
+        [Authorize]
+        [HttpGet("/admin/mfa/setup")]
+        public async Task<IActionResult> MfaSetup()
+        {
+            var username = User.Identity?.Name;
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var setupInfo = await _adminMfaService.GetOrCreateSetupAsync(username);
+
+            return View(new AdminMfaSetupVM
+            {
+                IsEnabled = setupInfo.IsEnabled,
+                ManualEntryKey = setupInfo.ManualEntryKey,
+                AuthenticatorUri = setupInfo.AuthenticatorUri,
+                QrCodeImageDataUrl = setupInfo.QrCodeImageDataUrl
+            });
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/mfa/setup")]
+        public async Task<IActionResult> MfaSetup(AdminMfaSetupVM vm)
+        {
+            var username = User.Identity?.Name;
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _adminMfaService.ConfirmSetupAsync(username, vm.VerificationCode);
+
+            if (!result.Succeeded)
+            {
+                var setupInfo = await _adminMfaService.GetOrCreateSetupAsync(username);
+
+                vm.IsEnabled = setupInfo.IsEnabled;
+                vm.ManualEntryKey = setupInfo.ManualEntryKey;
+                vm.AuthenticatorUri = setupInfo.AuthenticatorUri;
+                vm.QrCodeImageDataUrl = setupInfo.QrCodeImageDataUrl;
+                vm.VerificationCode = "";
+                vm.ErrorMessage = result.ErrorMessage;
+
+                return View(vm);
+            }
+
+            return View("MfaRecoveryCodes", new AdminMfaRecoveryCodesVM
+            {
+                RecoveryCodes = result.RecoveryCodes
+            });
+        }
+
+        // ARTICLES ===============================================================================
 
         [Authorize]
         [HttpGet("/admin/articles")]
@@ -708,157 +770,6 @@ namespace mcnylo.dev.Admin.Controllers
             return RedirectToAction("ProjectCategories");
         }
 
-        // TAGS ===================================================================================
-
-        [Authorize]
-        [HttpGet("/admin/tags")]
-        public async Task<IActionResult> Tags(int pageNumber = 1, int pageSize = 10, string? returnUrl = null)
-        {
-            var vm = await _articleService.GetAdminTagResultsAsync(pageNumber, pageSize);
-
-            vm.ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin";
-
-            return View(vm);
-        }
-
-        [Authorize]
-        [HttpGet("/admin/tags/create")]
-        public IActionResult CreateTag(string? returnUrl = null)
-        {
-            return View(new AdminTagFormVM
-            {
-                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
-                    ? returnUrl
-                    : "/admin/tags"
-            });
-        }
-
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [HttpPost("/admin/tags/create")]
-        public async Task<IActionResult> CreateTag(AdminTagFormVM vm)
-        {
-            vm.TagName = vm.TagName?.Trim() ?? "";
-            vm.TagSlug = vm.TagSlug?.Trim().ToLowerInvariant() ?? "";
-
-            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/tags";
-
-            if (await _articleService.TagSlugExistsAsync(vm.TagSlug))
-            {
-                ModelState.AddModelError(nameof(vm.TagSlug), "A tag with this slug already exists.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(vm);
-            }
-
-            var tag = new Tag
-            {
-                TagName = vm.TagName,
-                TagSlug = vm.TagSlug
-            };
-
-            await _articleService.CreateTagAsync(tag);
-
-            return Redirect(vm.ReturnUrl);
-        }
-
-        [Authorize]
-        [HttpGet("/admin/tags/{id:int}/edit")]
-        public async Task<IActionResult> EditTag(int id, string? returnUrl = null)
-        {
-            var tag = await _articleService.GetTagByIdAsync(id);
-
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            var vm = new AdminTagFormVM
-            {
-                Id = tag.Id,
-                TagName = tag.TagName,
-                TagSlug = tag.TagSlug,
-                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/tags"
-            };
-
-            return View(vm);
-        }
-
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [HttpPost("/admin/tags/{id:int}/edit")]
-        public async Task<IActionResult> EditTag(int id, AdminTagFormVM vm)
-        {
-            if (id != vm.Id)
-            {
-                return BadRequest();
-            }
-
-            vm.TagName = vm.TagName?.Trim() ?? "";
-            vm.TagSlug = vm.TagSlug?.Trim().ToLowerInvariant() ?? "";
-            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/tags";
-
-            var tag = await _articleService.GetTagByIdAsync(id);
-
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            if (await _articleService.TagSlugExistsAsync(vm.TagSlug, id))
-            {
-                ModelState.AddModelError(nameof(vm.TagSlug), "A tag with this slug already exists.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(vm);
-            }
-
-            tag.TagName = vm.TagName;
-            tag.TagSlug = vm.TagSlug;
-
-            await _articleService.UpdateTagAsync(tag);
-
-            return Redirect(vm.ReturnUrl);
-        }
-
-        [Authorize]
-        [HttpGet("/admin/tags/{id:int}/delete")]
-        public async Task<IActionResult> DeleteTag(int id, string? returnUrl = null)
-        {
-            var tag = await _articleService.GetTagDeleteDetailsAsync(id);
-
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            var vm = new AdminTagDeleteVM
-            {
-                Id = tag.Id,
-                TagName = tag.TagName,
-                TagSlug = tag.TagSlug,
-                ProjectCount = tag.ProjectTags.Count,
-                ArticleCount = await _articleService.GetArticleTagUsageCountAsync(tag.Id),
-                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/tags"
-            };
-
-            return View(vm);
-        }
-
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [HttpPost("/admin/tags/{id:int}/delete")]
-        public async Task<IActionResult> DeleteTagConfirmed(int id)
-        {
-            await _articleService.DeleteTagAsync(id);
-
-            return RedirectToAction("Tags");
-        }
-
         [Authorize]
         [ValidateAntiForgeryToken]
         [HttpPost("/admin/articles/inline-image")]
@@ -936,7 +847,7 @@ namespace mcnylo.dev.Admin.Controllers
                 ModelState.AddModelError(nameof(vm.CategoryId), "Select a valid category.");
             }
 
-            if (!string.IsNullOrWhiteSpace(vm.RepositoryURL) 
+            if (!string.IsNullOrWhiteSpace(vm.RepositoryURL)
                 && (!Uri.TryCreate(vm.RepositoryURL, UriKind.Absolute, out var repositoryUri) || repositoryUri.Scheme is not ("http" or "https")))
             {
                 ModelState.AddModelError(nameof(vm.RepositoryURL), "Enter a valid repository URL.");
@@ -1167,6 +1078,157 @@ namespace mcnylo.dev.Admin.Controllers
             await _projectService.DeleteProjectAsync(id);
 
             return RedirectToAction("Projects");
+        }
+
+        // TAGS ===================================================================================
+
+        [Authorize]
+        [HttpGet("/admin/tags")]
+        public async Task<IActionResult> Tags(int pageNumber = 1, int pageSize = 10, string? returnUrl = null)
+        {
+            var vm = await _articleService.GetAdminTagResultsAsync(pageNumber, pageSize);
+
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin";
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/tags/create")]
+        public IActionResult CreateTag(string? returnUrl = null)
+        {
+            return View(new AdminTagFormVM
+            {
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+                    ? returnUrl
+                    : "/admin/tags"
+            });
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/tags/create")]
+        public async Task<IActionResult> CreateTag(AdminTagFormVM vm)
+        {
+            vm.TagName = vm.TagName?.Trim() ?? "";
+            vm.TagSlug = vm.TagSlug?.Trim().ToLowerInvariant() ?? "";
+
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/tags";
+
+            if (await _articleService.TagSlugExistsAsync(vm.TagSlug))
+            {
+                ModelState.AddModelError(nameof(vm.TagSlug), "A tag with this slug already exists.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            var tag = new Tag
+            {
+                TagName = vm.TagName,
+                TagSlug = vm.TagSlug
+            };
+
+            await _articleService.CreateTagAsync(tag);
+
+            return Redirect(vm.ReturnUrl);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/tags/{id:int}/edit")]
+        public async Task<IActionResult> EditTag(int id, string? returnUrl = null)
+        {
+            var tag = await _articleService.GetTagByIdAsync(id);
+
+            if (tag == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminTagFormVM
+            {
+                Id = tag.Id,
+                TagName = tag.TagName,
+                TagSlug = tag.TagSlug,
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/tags"
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/tags/{id:int}/edit")]
+        public async Task<IActionResult> EditTag(int id, AdminTagFormVM vm)
+        {
+            if (id != vm.Id)
+            {
+                return BadRequest();
+            }
+
+            vm.TagName = vm.TagName?.Trim() ?? "";
+            vm.TagSlug = vm.TagSlug?.Trim().ToLowerInvariant() ?? "";
+            vm.ReturnUrl = !string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl) ? vm.ReturnUrl : "/admin/tags";
+
+            var tag = await _articleService.GetTagByIdAsync(id);
+
+            if (tag == null)
+            {
+                return NotFound();
+            }
+
+            if (await _articleService.TagSlugExistsAsync(vm.TagSlug, id))
+            {
+                ModelState.AddModelError(nameof(vm.TagSlug), "A tag with this slug already exists.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            tag.TagName = vm.TagName;
+            tag.TagSlug = vm.TagSlug;
+
+            await _articleService.UpdateTagAsync(tag);
+
+            return Redirect(vm.ReturnUrl);
+        }
+
+        [Authorize]
+        [HttpGet("/admin/tags/{id:int}/delete")]
+        public async Task<IActionResult> DeleteTag(int id, string? returnUrl = null)
+        {
+            var tag = await _articleService.GetTagDeleteDetailsAsync(id);
+
+            if (tag == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new AdminTagDeleteVM
+            {
+                Id = tag.Id,
+                TagName = tag.TagName,
+                TagSlug = tag.TagSlug,
+                ProjectCount = tag.ProjectTags.Count,
+                ArticleCount = await _articleService.GetArticleTagUsageCountAsync(tag.Id),
+                ReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/admin/tags"
+            };
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/tags/{id:int}/delete")]
+        public async Task<IActionResult> DeleteTagConfirmed(int id)
+        {
+            await _articleService.DeleteTagAsync(id);
+
+            return RedirectToAction("Tags");
         }
 
         // ABOUT ==================================================================================

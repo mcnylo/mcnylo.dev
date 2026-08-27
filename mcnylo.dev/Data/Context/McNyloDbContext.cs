@@ -14,6 +14,8 @@ namespace mcnylo.dev.Data.Context
         public DbSet<ArticleCategory> ArticleCategories => Set<ArticleCategory>();
         public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
         public DbSet<AboutPage> AboutPages => Set<AboutPage>();
+        public DbSet<AdminMfaSetting> AdminMfaSettings => Set<AdminMfaSetting>();
+        public DbSet<AdminMfaRecoveryCode> AdminMfaRecoveryCodes => Set<AdminMfaRecoveryCode>();
 
         // ========================================================================================
 
@@ -36,6 +38,8 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<ArticleCategory>().ToTable("articlecategory");
             modelBuilder.Entity<ArticleTag>().ToTable("articletag");
             modelBuilder.Entity<AboutPage>().ToTable("aboutpage");
+            modelBuilder.Entity<AdminMfaSetting>().ToTable("adminmfasetting");
+            modelBuilder.Entity<AdminMfaRecoveryCode>().ToTable("adminmfarecoverycode");
 
             modelBuilder.Entity<ProjectTag>().HasKey(x => new
             {
@@ -169,6 +173,32 @@ namespace mcnylo.dev.Data.Context
             modelBuilder.Entity<AboutPage>()
                 .Property(aboutPage => aboutPage.InterestsMarkdown)
                 .HasColumnType("longtext");
+
+            modelBuilder.Entity<AdminMfaSetting>()
+                .HasIndex(adminMfaSetting => adminMfaSetting.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<AdminMfaSetting>()
+                .Property(adminMfaSetting => adminMfaSetting.Username)
+                .HasMaxLength(256);
+
+            modelBuilder.Entity<AdminMfaSetting>()
+                .Property(adminMfaSetting => adminMfaSetting.ProtectedSecretKey)
+                .HasMaxLength(2048);
+
+            modelBuilder.Entity<AdminMfaSetting>()
+                .Property(adminMfaSetting => adminMfaSetting.IsEnabled)
+                .HasColumnType("bit(1)");
+
+            modelBuilder.Entity<AdminMfaSetting>()
+                .HasMany(adminMfaSetting => adminMfaSetting.RecoveryCodes)
+                .WithOne(recoveryCode => recoveryCode.AdminMfaSetting)
+                .HasForeignKey(recoveryCode => recoveryCode.AdminMfaSettingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AdminMfaRecoveryCode>()
+                .Property(recoveryCode => recoveryCode.CodeHash)
+                .HasMaxLength(512);
         }
     }
 }

@@ -52,6 +52,7 @@ namespace mcnylo.dev
             builder.Services.AddScoped<IProjectImageUploadService, ProjectImageUploadService>();
             builder.Services.AddScoped<IMediaAdminService, MediaAdminService>();
             builder.Services.AddScoped<IResumePdfUploadService, ResumePdfUploadService>();
+            builder.Services.AddScoped<IAdminMfaService, AdminMfaService>();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -60,10 +61,10 @@ namespace mcnylo.dev
 
             var dataProtectionKeyPath = builder.Configuration["DataProtection:KeyPath"];
 
-            //if (builder.Environment.IsProduction() && string.IsNullOrWhiteSpace(dataProtectionKeyPath))
-            //{
-            //    throw new InvalidOperationException("DataProtection:KeyPath must be configured in production.");
-            //}
+            if (builder.Environment.IsProduction() && string.IsNullOrWhiteSpace(dataProtectionKeyPath))
+            {
+                throw new InvalidOperationException("DataProtection:KeyPath must be configured in production.");
+            }
 
             var dataProtectionBuilder = builder.Services.AddDataProtection().SetApplicationName("mcnylo.dev");
 
