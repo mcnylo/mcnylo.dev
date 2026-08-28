@@ -39,7 +39,7 @@ namespace mcnylo.dev
                 options.LowercaseQueryStrings = false;
             });
 
-            var connectionString = builder.Configuration.GetConnectionString("HomeConnection");
+            var connectionString = builder.Configuration.GetConnectionString("DBConnection");
 
             builder.Services.AddDbContext<McNyloDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddScoped<IHomeService, HomeService>();
