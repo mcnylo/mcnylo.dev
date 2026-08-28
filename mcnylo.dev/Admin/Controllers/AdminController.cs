@@ -15,6 +15,7 @@ using mcnylo.dev.Projects.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
@@ -27,6 +28,8 @@ namespace mcnylo.dev.Admin.Controllers
 {
     public class AdminController : Controller
     {
+        private const string PendingMfaCookieName = "McNylo.PendingMfa";
+
         private readonly IConfiguration _configuration;
         private readonly IArticleService _articleService;
         private readonly IArticleImageUploadService _articleImageUploadService;
@@ -37,6 +40,7 @@ namespace mcnylo.dev.Admin.Controllers
         private readonly IMediaAdminService _mediaAdminService;
         private readonly IResumePdfUploadService _resumePdfUploadService;
         private readonly IAdminMfaService _adminMfaService;
+        private readonly IDataProtector _pendingMfaProtector;
 
         // ========================================================================================
 
@@ -49,7 +53,8 @@ namespace mcnylo.dev.Admin.Controllers
             IAboutService aboutService,
             IMediaAdminService mediaAdminService,
             IResumePdfUploadService resumePdfUploadService,
-            IAdminMfaService adminMfaService)
+            IAdminMfaService adminMfaService,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _configuration = configuration;
             _articleService = articleService;
@@ -61,6 +66,7 @@ namespace mcnylo.dev.Admin.Controllers
             _mediaAdminService = mediaAdminService;
             _resumePdfUploadService = resumePdfUploadService;
             _adminMfaService = adminMfaService;
+            _pendingMfaProtector = dataProtectionProvider.CreateProtector("mcnylo.dev.Admin.PendingMfa.v1");
         }
 
         // ========================================================================================
@@ -77,12 +83,14 @@ namespace mcnylo.dev.Admin.Controllers
         [HttpGet("/admin/login")]
         public IActionResult Login(string? returnUrl = null)
         {
+            ClearPendingMfaCookie();
+
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
-            return View(new AdminLoginVM  { ReturnUrl = returnUrl });
+            return View(new AdminLoginVM { ReturnUrl = returnUrl });
         }
 
         [AllowAnonymous]
@@ -110,6 +118,13 @@ namespace mcnylo.dev.Admin.Controllers
                 return View(vm);
             }
 
+            if (await _adminMfaService.IsMfaEnabledAsync(configUsername))
+            {
+                SetPendingMfaCookie(configUsername, vm.ReturnUrl);
+
+                return Redirect("/admin/mfa");
+            }
+
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Name, configUsername),
@@ -134,9 +149,11 @@ namespace mcnylo.dev.Admin.Controllers
         [HttpPost("/admin/logout")]
         public async Task<IActionResult> Logout()
         {
+            ClearPendingMfaCookie();
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction("Login");
+            return RedirectToAction(nameof(Login));
         }
 
         [Authorize]
@@ -170,7 +187,7 @@ namespace mcnylo.dev.Admin.Controllers
 
             if (string.IsNullOrWhiteSpace(username))
             {
-                return RedirectToAction(nameof(Login));
+                return RedirectToAction("Index");
             }
 
             var result = await _adminMfaService.ConfirmSetupAsync(username, vm.VerificationCode);
@@ -193,6 +210,70 @@ namespace mcnylo.dev.Admin.Controllers
             {
                 RecoveryCodes = result.RecoveryCodes
             });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/admin/mfa")]
+        public IActionResult Mfa()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!TryGetPendingMfa(out _, out _))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            return View(new AdminMfaVerificationVM());
+        }
+
+        [AllowAnonymous]
+        [EnableRateLimiting("AdminLogin")]
+        [ValidateAntiForgeryToken]
+        [HttpPost("/admin/mfa")]
+        public async Task<IActionResult> Mfa(AdminMfaVerificationVM vm)
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (!TryGetPendingMfa(out var username, out var returnUrl))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await _adminMfaService.VerifyLoginCodeAsync(username, vm.Code);
+
+            if (!result.Succeeded)
+            {
+                vm.Code = "";
+                vm.ErrorMessage = result.ErrorMessage;
+
+                return View(vm);
+            }
+
+            ClearPendingMfaCookie();
+
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.Role, "Admin")
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index");
         }
 
         // ARTICLES ===============================================================================
@@ -1629,6 +1710,89 @@ namespace mcnylo.dev.Admin.Controllers
             }
 
             return $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
+        }
+        private void SetPendingMfaCookie(string username, string? returnUrl)
+        {
+            var expiresUtc = DateTimeOffset.UtcNow.AddMinutes(5);
+
+            var payload = string.Join(".",
+                Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(username)),
+                Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(returnUrl ?? "")),
+                expiresUtc.ToUnixTimeSeconds());
+
+            Response.Cookies.Append(
+                PendingMfaCookieName,
+                _pendingMfaProtector.Protect(payload),
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/admin",
+                    Expires = expiresUtc,
+                    IsEssential = true
+                });
+        }
+        private bool TryGetPendingMfa(out string username, out string? returnUrl)
+        {
+            username = "";
+            returnUrl = null;
+
+            if (!Request.Cookies.TryGetValue(PendingMfaCookieName, out var protectedPayload) ||
+                string.IsNullOrWhiteSpace(protectedPayload))
+            {
+                return false;
+            }
+
+            try
+            {
+                var payload = _pendingMfaProtector.Unprotect(protectedPayload);
+                var payloadParts = payload.Split('.', 3);
+
+                if (payloadParts.Length != 3)
+                {
+                    return false;
+                }
+
+                if (!long.TryParse(payloadParts[2], out var expiresUnixSeconds) ||
+                    expiresUnixSeconds <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                {
+                    return false;
+                }
+
+                username = Encoding.UTF8.GetString(Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Decode(payloadParts[0]));
+                returnUrl = Encoding.UTF8.GetString(Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Decode(payloadParts[1]));
+
+                if (string.IsNullOrWhiteSpace(username))
+                {
+                    username = "";
+                    returnUrl = null;
+
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+                {
+                    returnUrl = null;
+                }
+
+                return true;
+            }
+            catch (CryptographicException)
+            {
+                return false;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+        private void ClearPendingMfaCookie()
+        {
+            Response.Cookies.Delete(PendingMfaCookieName, new CookieOptions
+            {
+                Path = "/admin"
+            });
         }
     }
 }
