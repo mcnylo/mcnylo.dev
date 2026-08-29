@@ -32,12 +32,12 @@
             </a>
 
             <!-- Menu for mobile -->
-            <div class="dropdown dropdown-start order-1 sm:hidden">
-                <button class="btn btn-ghost">
+            <details class="dropdown dropdown-start order-1 sm:hidden">
+                <summary class="btn btn-ghost list-none" aria-label="Open navigation menu">
                     <i class="fa-solid fa-bars text-lg"></i>
-                </button>
+                </summary>
 
-                <ul tabindex="0" class="dropdown-content menu z-[1] bg-base-200 p-6 rounded-box shadow w-56 gap-2">
+                <ul class="dropdown-content menu z-50 mt-2 w-56 gap-2 rounded-box border border-[#22ee29]/15 bg-base-200 p-6 shadow-xl">
                     <div class="flex justify-center gap-2">
                         <a class="btn btn-circle btn-ghost btn-sm text-xl" href="https://github.com/mcnylo" target="_blank">
                             <i class="fa-brands fa-fw fa-github"></i>
@@ -54,9 +54,9 @@
 
                     <li><a asp-controller="About" asp-action="Index">About Me</a></li>
                     <li><a asp-controller="Projects" asp-action="Index">Projects</a></li>
-                    <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
+                    <li><a asp-controller="Articles" asp-action="Index">Articles</a></li>
                 </ul>
-            </div>
+            </details>
 
             <!-- Menu for desktop -->
             <ul class="menu hidden gap-2 sm:flex sm:menu-horizontal">
