@@ -23,7 +23,23 @@ namespace mcnylo.dev.About.Services
 
         public async Task<AboutPage?> GetAboutPageAsync()
         {
-            return await _dbContext.AboutPages.AsNoTracking().OrderBy(aboutPage => aboutPage.Id).FirstOrDefaultAsync();
+            var aboutPage = await _dbContext.AboutPages.OrderBy(aboutPage => aboutPage.Id).FirstOrDefaultAsync();
+
+            if (aboutPage != null)
+            {
+                return aboutPage;
+            }
+
+            aboutPage = new AboutPage
+            {
+                CreatedOn = DateTime.UtcNow
+            };
+
+            _dbContext.AboutPages.Add(aboutPage);
+
+            await _dbContext.SaveChangesAsync();
+
+            return aboutPage;
         }
         public async Task<bool> UpdateAboutPageAsync(AboutPage aboutPage)
         {
