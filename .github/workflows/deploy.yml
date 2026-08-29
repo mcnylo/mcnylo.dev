@@ -36,17 +36,31 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}
 
       - name: Configure SSH
+        shell: bash
         run: |
+          set -euo pipefail
+
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.DROPLET_SSH_KEY }}" > ~/.ssh/deploy_key
-          printf '%s\n' "${{ secrets.DROPLET_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "${{ secrets.DROPLET_SSH_KEY }}" | sed 's/\r$//' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+
+          printf '%s\n' "${{ secrets.DROPLET_KNOWN_HOSTS }}" | sed 's/\r$//' > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          ssh-keygen -F "${{ secrets.DROPLET_HOST }}" -f ~/.ssh/known_hosts > /dev/null
 
       - name: Deploy on Droplet
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }} '
-            cd /srv/mcnylo/app &&
-            docker compose pull web &&
-            docker compose up -d web &&
-            docker image prune -f
-          '
+          ssh \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile=~/.ssh/known_hosts \
+            -i ~/.ssh/deploy_key \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}" '
+              cd /srv/mcnylo/app &&
+              docker compose pull web &&
+              docker compose up -d web &&
+              docker image prune -f
+            '
