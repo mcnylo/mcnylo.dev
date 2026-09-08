@@ -915,6 +915,7 @@ namespace mcnylo.dev.Admin.Controllers
             vm.ShortDescription = vm.ShortDescription?.Trim() ?? "";
             vm.LongDescription = vm.LongDescription?.Trim() ?? "";
             vm.RepositoryURL = vm.RepositoryURL?.Trim() ?? "";
+            vm.ArticleURL = vm.ArticleURL?.Trim() ?? "";
 
             if (await _projectService.ProjectSlugExistsAsync(vm.ProjectSlug))
             {
@@ -987,6 +988,7 @@ namespace mcnylo.dev.Admin.Controllers
                 ProjectDescription = project.LongDescription ?? "",
                 ProjectCategory = project.Category.CategoryName,
                 RepositoryURL = project.RepositoryURL,
+                ArticleURL = project.ArticleURL,
                 IsFeatured = project.IsFeatured,
                 Tags = project.ProjectTags
                     .Where(projectTag => projectTag.Tag != null)
@@ -1039,6 +1041,7 @@ namespace mcnylo.dev.Admin.Controllers
                 LongDescription = project.LongDescription ?? "",
                 CategoryId = project.CategoryId,
                 RepositoryURL = project.RepositoryURL ?? "",
+                ArticleURL = project.ArticleURL ?? "",
                 IsFeatured = project.IsFeatured,
                 SelectedTagIds = project.ProjectTags.Select(projectTag => projectTag.TagId).ToList(),
                 PrimaryMediaIndex = primaryMediaIndex,
@@ -1080,6 +1083,7 @@ namespace mcnylo.dev.Admin.Controllers
             vm.ShortDescription = vm.ShortDescription?.Trim() ?? "";
             vm.LongDescription = vm.LongDescription?.Trim() ?? "";
             vm.RepositoryURL = vm.RepositoryURL?.Trim() ?? "";
+            vm.ArticleURL = vm.ArticleURL?.Trim() ?? "";
 
             if (await _projectService.ProjectSlugExistsAsync(vm.ProjectSlug, id))
             {

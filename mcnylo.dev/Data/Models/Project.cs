@@ -13,6 +13,7 @@
         public bool IsFeatured { get; set; } = false;
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public DateTime? UpdatedOn {  get; set; } = null;
+        public string? ArticleURL { get; set; } = "";
         public ICollection<ProjectTag> ProjectTags { get; set; } = [];
         public List<ProjectMedia> MediaItems { get; set; } = [];
     }

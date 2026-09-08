@@ -221,6 +221,16 @@
                 </div>
 
                 <div class="border border-[#22ee29]/15 bg-black/25 p-4">
+                    <label asp-for="ArticleURL" class="font-mono text-xs uppercase tracking-[0.2em] text-[#6ef967]/65">
+                        Article URL
+                    </label>
+                    <input asp-for="ArticleURL"
+                           placeholder="https://mcnylo.dev/articles/..."
+                           class="mt-2 min-h-11 w-full border border-[#22ee29]/20 bg-zinc-950/70 px-4 font-mono text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-[#22ee29]/60 focus:ring-1 focus:ring-[#22ee29]/30" />
+                    <span asp-validation-for="ArticleURL" class="mt-2 block text-sm text-red-300"></span>
+                </div>
+
+                <div class="border border-[#22ee29]/15 bg-black/25 p-4">
                     <label class="flex cursor-pointer items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-zinc-300">
                         <input asp-for="IsFeatured"
                                class="checkbox checkbox-primary checkbox-xs rounded-none" />

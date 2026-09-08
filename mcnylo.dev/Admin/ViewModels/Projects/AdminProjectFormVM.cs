@@ -25,6 +25,10 @@ namespace mcnylo.dev.Admin.ViewModels.Projects
         [StringLength(500)]
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string RepositoryURL { get; set; } = "";
+
+        [StringLength(500)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string ArticleURL { get; set; } = "";
         public bool IsFeatured { get; set; } = false;
         public List<int> SelectedTagIds { get; set; } = [];
         public int PrimaryMediaIndex { get; set; } = 0;

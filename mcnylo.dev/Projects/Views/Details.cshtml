@@ -141,11 +141,36 @@
                                     View Repository
                                 </a>
                             }
+                            else if (Model.RepositoryURL == "PRIVATE")
+                            {
+                                <a class="btn btn-primary mt-4" disabled>
+                                    <i class="fa-solid fa-lock"></i>
+                                    Private repository.
+                                </a>
+                            }
                             else
                             {
-                                <p class="mt-4 text-sm text-white/50">
-                                    No public repository available for this project.
-                                </p>
+                                <a class="btn btn-primary mt-4" disabled>
+                                    No repo available for this project.
+                                </a>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(Model.ArticleURL))
+                            {
+                                <a href="@Model.ArticleURL"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-primary mt-4">
+                                    <i class="fa-solid fa-newspaper"></i>
+                                    View Related Article
+                                </a>
+                            }
+                            else 
+                            {
+                                <a class="btn btn-primary mt-4" disabled>
+                                    <i class="fa-solid fa-newspaper"></i>
+                                    No article available for this project.
+                                </a>
                             }
 
                         </div>
