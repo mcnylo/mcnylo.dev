@@ -47,16 +47,16 @@
                     Published @Model.PublishedOn.Value.ToString("MMM dd, yyyy")
                 </p>
             }
-
-            @if (!string.IsNullOrWhiteSpace(Model.PrimaryImagePath))
-            {
-                <figure class="mt-10 overflow-hidden border border-[#22ee29]/15 bg-black/30">
-                    <img src="@Model.PrimaryImagePath"
-                         alt="@(string.IsNullOrWhiteSpace(Model.PrimaryImageAltText) ? Model.ArticleTitle : Model.PrimaryImageAltText)"
-                         class="aspect-[16/7] w-full object-cover opacity-90" />
-                </figure>
-            }
         </header>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PrimaryImagePath))
+        {
+            <figure class="mt-10 max-w-[72ch] overflow-hidden border border-[#22ee29]/15 bg-black/30">
+                <img src="@Model.PrimaryImagePath"
+                     alt="@(string.IsNullOrWhiteSpace(Model.PrimaryImageAltText) ? Model.ArticleTitle : Model.PrimaryImageAltText)"
+                     class="block w-full h-auto" />
+            </figure>
+        }
 
         <article class="article-markdown mt-12 border-t border-[#22ee29]/15 pt-10 text-zinc-300">
             @Html.Raw(Model.HtmlContent)

@@ -1172,6 +1172,7 @@ body {
 
 .article-markdown {
     max-width: 72ch;
+    hyphens: auto;
 }
 
     .article-markdown > * + * {
@@ -1207,6 +1208,8 @@ body {
     .article-markdown li {
         color: var(--color-zinc-300);
         line-height: 1.8;
+        text-align: justify;
+        text-justify: inter-word;
     }
 
     .article-markdown strong {
