@@ -1,10 +1,12 @@
-﻿using Markdig;
+﻿using Ganss.Xss;
+using Markdig;
 
 namespace mcnylo.dev.Articles.Services
 {
     public class ArticleMarkdownService : IArticleMarkdownService
     {
-        private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build();
+        private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        private static readonly HtmlSanitizer HtmlSanitizer = CreateHtmlSanitizer();
 
         // ========================================================================================
 
@@ -15,7 +17,26 @@ namespace mcnylo.dev.Articles.Services
                 return "";
             }
 
-            return Markdown.ToHtml(markdown, MarkdownPipeline);
+            string html = Markdown.ToHtml(markdown, MarkdownPipeline);
+
+            return HtmlSanitizer.Sanitize(html);
+        }
+
+        // ========================================================================================
+
+        private static HtmlSanitizer CreateHtmlSanitizer()
+        {
+            HtmlSanitizer sanitizer = new HtmlSanitizer();
+
+            sanitizer.AllowedTags.Add("blockquote");
+            sanitizer.AllowedTags.Add("figure");
+            sanitizer.AllowedTags.Add("figcaption");
+            sanitizer.AllowedTags.Add("kbd");
+
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowedAttributes.Add("id");
+
+            return sanitizer;
         }
     }
 }
