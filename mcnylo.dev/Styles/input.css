@@ -1251,6 +1251,24 @@ body {
             margin-bottom: 0;
         }
 
+    .article-markdown a {
+        color: #6ef967;
+        text-decoration-line: underline;
+        text-decoration-color: rgb(110 249 103 / 0.65);
+        text-underline-offset: 0.18em;
+        transition: color 160ms ease, text-decoration-color 160ms ease;
+    }
+
+        .article-markdown a:hover {
+            color: #a7ff9f;
+            text-decoration-color: rgb(167 255 159 / 0.95);
+        }
+
+        .article-markdown a:focus-visible {
+            outline: 2px solid rgb(110 249 103 / 0.8);
+            outline-offset: 3px;
+        }
+
     .article-markdown code {
         border: 1px solid rgb(34 238 41 / 0.18);
         background: rgb(0 0 0 / 0.35);
