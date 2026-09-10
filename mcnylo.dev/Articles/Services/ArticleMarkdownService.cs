@@ -32,6 +32,8 @@ namespace mcnylo.dev.Articles.Services
             sanitizer.AllowedTags.Add("figure");
             sanitizer.AllowedTags.Add("figcaption");
             sanitizer.AllowedTags.Add("kbd");
+            sanitizer.AllowedTags.Add("pre");
+            sanitizer.AllowedTags.Add("code");
 
             sanitizer.AllowedAttributes.Add("class");
             sanitizer.AllowedAttributes.Add("id");

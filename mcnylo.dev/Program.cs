@@ -143,7 +143,7 @@ namespace mcnylo.dev
                     "img-src 'self' data: blob: https://img.youtube.com; " +
                     "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
                     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
-                    "script-src 'self' 'unsafe-inline'; " +
+                    "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
                     "connect-src 'self'; " +
                     "frame-src 'self' https://www.youtube-nocookie.com; " +
                     "upgrade-insecure-requests");
