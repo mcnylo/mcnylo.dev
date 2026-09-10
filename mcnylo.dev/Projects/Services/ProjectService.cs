@@ -156,6 +156,7 @@ namespace mcnylo.dev.Projects.Services
             vm.ProjectDescription = project.LongDescription ?? "";
             vm.ProjectCategory = project.Category.CategoryName;
             vm.RepositoryURL = project.RepositoryURL;
+            vm.ArticleURL = project.ArticleURL;
             vm.IsFeatured = project.IsFeatured;
 
             var tags = project.ProjectTags.Select(x => x.Tag.TagName).OrderBy(tagName => tagName).ToList();
@@ -397,6 +398,7 @@ namespace mcnylo.dev.Projects.Services
             existingProject.LongDescription = project.LongDescription;
             existingProject.CategoryId = project.CategoryId;
             existingProject.RepositoryURL = project.RepositoryURL;
+            existingProject.ArticleURL = project.ArticleURL;
             existingProject.IsFeatured = project.IsFeatured;
             existingProject.UpdatedOn = project.UpdatedOn;
 
@@ -480,7 +482,6 @@ namespace mcnylo.dev.Projects.Services
                 .Include(project => project.MediaItems)
                 .FirstOrDefaultAsync(project => project.Id == id);
         }
-
         public async Task DeleteProjectAsync(int id)
         {
             var project = await _dbContext.Projects

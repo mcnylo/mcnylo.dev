@@ -929,12 +929,6 @@ namespace mcnylo.dev.Admin.Controllers
                 ModelState.AddModelError(nameof(vm.CategoryId), "Select a valid category.");
             }
 
-            if (!string.IsNullOrWhiteSpace(vm.RepositoryURL)
-                && (!Uri.TryCreate(vm.RepositoryURL, UriKind.Absolute, out var repositoryUri) || repositoryUri.Scheme is not ("http" or "https")))
-            {
-                ModelState.AddModelError(nameof(vm.RepositoryURL), "Enter a valid repository URL.");
-            }
-
             NormalizeProjectMediaRows(vm);
             ValidateProjectMediaRows(vm, allowExistingMedia: false);
 
@@ -960,6 +954,7 @@ namespace mcnylo.dev.Admin.Controllers
                 LongDescription = vm.LongDescription,
                 CategoryId = vm.CategoryId,
                 RepositoryURL = vm.RepositoryURL,
+                ArticleURL = vm.ArticleURL,
                 IsFeatured = vm.IsFeatured,
                 CreatedOn = now
             };
@@ -1121,6 +1116,7 @@ namespace mcnylo.dev.Admin.Controllers
                 LongDescription = vm.LongDescription,
                 CategoryId = vm.CategoryId,
                 RepositoryURL = vm.RepositoryURL,
+                ArticleURL = vm.ArticleURL,
                 IsFeatured = vm.IsFeatured,
                 UpdatedOn = DateTime.UtcNow
             }, vm.SelectedTagIds, mediaItems);
