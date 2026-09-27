@@ -131,7 +131,14 @@
                                 Links
                             </h2>
 
-                            @if (!string.IsNullOrWhiteSpace(Model.RepositoryURL))
+                            @if (Model.RepositoryURL == "PRIVATE")
+                            {
+                                <a class="btn btn-primary mt-4" disabled>
+                                    <i class="fa-solid fa-lock"></i>
+                                    Private repository.
+                                </a>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(Model.RepositoryURL))
                             {
                                 <a href="@Model.RepositoryURL"
                                    target="_blank"
@@ -139,13 +146,6 @@
                                    class="btn btn-primary mt-4">
                                     <i class="fa-brands fa-github"></i>
                                     View Repository
-                                </a>
-                            }
-                            else if (Model.RepositoryURL == "PRIVATE")
-                            {
-                                <a class="btn btn-primary mt-4" disabled>
-                                    <i class="fa-solid fa-lock"></i>
-                                    Private repository.
                                 </a>
                             }
                             else
