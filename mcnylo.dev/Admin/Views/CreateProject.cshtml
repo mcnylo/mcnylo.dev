@@ -256,6 +256,15 @@
             const rows = mediaRows?.querySelectorAll("[data-media-row]") ?? [];
 
             rows.forEach((row, index) => {
+                if (rows.length === 1) {
+                    removeButton = row.querySelector(".remove-project-media-row");
+                    removeButton.classList.add('hidden');
+                }
+                else {
+                    removeButton = row.querySelector(".remove-project-media-row");
+                    removeButton.classList.remove('hidden');
+                }
+
                 row.querySelectorAll("[name]").forEach((field) => {
                     field.name = field.name.replace(/MediaItems\[\d+\]/, `MediaItems[${index}]`);
                 });
